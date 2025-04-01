@@ -893,14 +893,14 @@ msgstr ""
 #: classes/class-s2-forms.php:235
 #: traits/ShortcodeTrait.php:124
 msgid "Subscribe"
-msgstr ""
+msgstr "Anmelden"
 
 #: admin/subscribers.php:239
 #: admin/subscribers.php:327
 #: classes/class-s2-forms.php:207
 #: traits/ShortcodeTrait.php:123
 msgid "Unsubscribe"
-msgstr ""
+msgstr "Abmelden"
 
 #: admin/subscribers.php:244
 #: admin/subscribers.php:267
