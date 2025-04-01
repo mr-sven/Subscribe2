@@ -4,7 +4,7 @@
  * Subscribe frontend class.
  */
 class S2_Frontend extends S2_Core {
-
+	public $message;
     /**
      * Process unsubscribe.
      *

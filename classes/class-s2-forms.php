@@ -473,7 +473,7 @@ class S2_Forms {
 	/**
 	 * Collect an array of all author level users and above.
 	 *
-	 * @return void
+	 * @return void|array
 	 */
 	public function get_authors() {
 		if ( '' === $this->all_authors ) {

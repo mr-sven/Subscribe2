@@ -119,6 +119,11 @@ class S2_Core {
 	public $clean_interval;
 	public $lockout;
 	public $wp_release;
+	public $preview_email;
+
+	public function prepare_export( $subscribers ) {
+		// Virtual
+	}
 
 	/**
 	 * Load plugin translations.
@@ -2095,7 +2100,7 @@ class S2_Core {
 			$all_post_cats_string = implode( ',', $all_post_cats );
 			$registered           = $this->get_registered( "cats=$all_post_cats_string" );
 			$recipients           = array_merge( (array) $public, (array) $registered );
-			$this->mail( $recipients, $subject, $mailtext, $digest_format );
+			$this->mail( $recipients, $subject, $mailtext);
 		}
 	}
 

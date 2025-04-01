@@ -4,6 +4,7 @@
  * Ajax handler class.
  */
 class S2_Ajax {
+	public $script_debug;
 
 	/**
 	 * Class constructor.
