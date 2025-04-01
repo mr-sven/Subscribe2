@@ -1633,27 +1633,27 @@ msgstr ""
 
 #: traits/ShortcodeTrait.php:69
 msgid "No such email address is registered."
-msgstr ""
+msgstr "E-Mail Adresse nicht gefunden."
 
 #: traits/ShortcodeTrait.php:71
 msgid "You have successfully subscribed!"
-msgstr ""
+msgstr "Anmeldung erfolgreich"
 
 #: traits/ShortcodeTrait.php:73
 msgid "You have successfully unsubscribed."
-msgstr ""
+msgstr "Abmeldung erfolgreich."
 
 #: traits/ShortcodeTrait.php:75
 msgid "subscribe"
-msgstr ""
+msgstr "Anmelden"
 
 #: traits/ShortcodeTrait.php:77
 msgid "unsubscribe"
-msgstr ""
+msgstr "Abmelden"
 
 #: traits/ShortcodeTrait.php:162
 msgid "Enter email address..."
-msgstr ""
+msgstr "E-Mail Adresse eingeben..."
 
 #: traits/ShortcodeTrait.php:175
 msgid "Leave This Blank:"
@@ -1670,4 +1670,4 @@ msgstr ""
 #: traits/ShortcodeTrait.php:190
 #: traits/ShortcodeTrait.php:192
 msgid "Your email:"
-msgstr ""
+msgstr "Ihre E-Mail Adresse:"
