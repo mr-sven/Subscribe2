@@ -762,7 +762,7 @@ class S2_Core {
             $type = pathinfo($relative_path, PATHINFO_EXTENSION);
             $data = file_get_contents($relative_path);
             $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            return '<img src="' . $base64 . '" alt="" />';
+            return '<img src="' . $base64 . '" alt="" data-rel="'.$relative_path.'"/>';
         }, $html_excerpt);
 
         // Remove excess white space from with $excerpt and $plaintext.
