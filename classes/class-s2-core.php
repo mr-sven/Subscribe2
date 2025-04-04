@@ -753,7 +753,11 @@ class S2_Core {
             if (!str_starts_with($matches[1], $site_url)) {
                 return '';
             }
-            $relative_path = str_replace( $site_url, '', $matches[1]);
+            $relative_path = str_replace($site_url, '', $matches[1]);
+
+            if (str_starts_with($relative_path, '/')) {
+                $relative_path = substr($relative_path, 1);
+            }
 
             $type = pathinfo($relative_path, PATHINFO_EXTENSION);
             $data = file_get_contents($relative_path);
