@@ -388,51 +388,6 @@ class S2_Admin extends S2_Core {
 		if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) ) {
 			return;
 		}
-
-		if ( 'true' === get_user_option( 'rich_editing' ) ) {
-			// Hook into the rich text editor.
-			add_filter( 'mce_external_plugins', array( $this, 'mce_plugin' ) );
-			add_filter( 'mce_buttons', array( $this, 'mce_button' ) );
-		} else {
-			wp_enqueue_script( 'subscribe2_button', S2URL . 'include/s2-button' . $this->script_debug . '.js', array( 'quicktags' ), '2.0', true );
-		}
-	}
-
-	/**
-	 * Add for Rich Text Editor.
-	 *
-	 * @return array
-	 */
-	public function mce_plugin( $arr ) {
-		$arr['subscribe2'] = S2URL . 'tinymce/editor-plugin4' . $this->script_debug . '.js';
-		return $arr;
-	}
-
-	/**
-	 * Add buttons for Rich Text Editor.
-	 *
-	 * @param array $arr
-	 *
-	 * @return array
-	 */
-	public function mce_button( $arr ) {
-		$arr[] = 'subscribe2';
-		return $arr;
-	}
-
-	/**
-	 * Add css and js files for widget admin header.
-	 *
-	 * @return void
-	 */
-	public function widget_s2counter_css_and_js() {
-		// Ensure we only add colorpicker js to widgets page.
-		if ( false !== stripos( esc_url( $_SERVER['REQUEST_URI'] ), 'widgets.php' ) ) {
-			wp_enqueue_style( 'farbtastic' );
-			wp_enqueue_script( 'farbtastic' );
-			wp_register_script( 's2_colorpicker', S2URL . 'include/s2-colorpicker' . $this->script_debug . '.js', array( 'farbtastic' ), '1.3', true );
-			wp_enqueue_script( 's2_colorpicker' );
-		}
 	}
 
 	/**

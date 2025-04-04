@@ -223,7 +223,6 @@ class S2_Core {
 			add_filter( 'wp_mail_content_type', array( $this, 'html_email' ) );
 
 			if ( 'yes' === $this->subscribe2_options['stylesheet'] ) {
-				//$style = file_get_contents(get_stylesheet_directory().'/style.css');
 				$minifier = new Minify\CSS(get_stylesheet_directory().'/style.css');
 				$style = $minifier->minify();
 				$mailtext = apply_filters( 's2_html_email', '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><title>' . $subject . '</title><style>'.$style.'</style><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>' . $message . '</body></html>', $subject, $message ); // phpcs:ignore WordPress.WP.EnqueuedResources
@@ -2347,11 +2346,6 @@ class S2_Core {
 			// Add write button.
 			if ( '1' === $this->subscribe2_options['show_button'] && false === $this->block_editor ) {
 				add_action( 'admin_init', array( $this, 'button_init' ) );
-			}
-
-			// Add counterwidget css and js.
-			if ( '1' === $this->subscribe2_options['counterwidget'] ) {
-				add_action( 'admin_init', array( $this, 'widget_s2counter_css_and_js' ) );
 			}
 
 			// Add one-click handlers.
