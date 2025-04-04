@@ -755,14 +755,15 @@ class S2_Core {
             }
             $relative_path = str_replace($site_url, '', $matches[1]);
 
-            if (str_starts_with($relative_path, '/')) {
-                $relative_path = substr($relative_path, 1);
+            if (!str_starts_with($relative_path, '/')) {
+                $relative_path = '/' . $relative_path;
             }
+            $path = ABSPATH . $relative_path;
 
-            $type = pathinfo($relative_path, PATHINFO_EXTENSION);
-            $data = file_get_contents($relative_path);
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
             $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            return '<img src="' . $base64 . '" alt="" data-rel="'.$relative_path.'"/>';
+            return '<img src="' . $base64 . '" alt="" data-rel="'.$path.'"/>';
         }, $html_excerpt);
 
         // Remove excess white space from with $excerpt and $plaintext.
