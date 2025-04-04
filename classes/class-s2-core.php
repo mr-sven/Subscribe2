@@ -251,7 +251,7 @@ class S2_Core {
 				}
 
                 // Parse unsubscribe shortcode.
-                $mailtext = $this->parse_unsubscribe_link( $mailtext, $recipient );
+                $mailtext = $this->parse_unsubscribe_link( $mailtext, $recipient, $type );
 
 				// Use the mail queue provided we are not sending a preview.
 				if ( function_exists( 'wpmq_mail' ) && ! isset( $this->preview_email ) ) {
@@ -403,7 +403,7 @@ class S2_Core {
 	 *
 	 * @return string|string[]
 	 */
-	public function parse_unsubscribe_link( $content, $recipient ) {
+	public function parse_unsubscribe_link( $content, $recipient, $type ) {
 		if ( empty( $this->subscribe2_options['s2_unsub_page'] ) ) {
 			return str_replace('{UNSUBLINK}', '', $content );
 		}
@@ -411,6 +411,10 @@ class S2_Core {
 		$page_url  = get_page_link( $this->subscribe2_options['s2_unsub_page'] );
 		$query     = parse_url( $page_url, PHP_URL_QUERY );
 		$page_url .= ( ( $query ? '&' : '?' ) . 's2_unsub=' . base64_encode( $recipient ) );
+
+		if ($type == 'html') {
+			$page_url = '<a href="' . $page_url . '">' . __( 'Unsubscribe', 'subscribe2' ) . '</a>';
+		}
 
 		return str_replace('{UNSUBLINK}', $page_url, $content );
 	}
