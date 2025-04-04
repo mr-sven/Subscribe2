@@ -1,6 +1,7 @@
 <?php
 require_once S2PATH . 'traits/ShortcodeTrait.php';
-
+require_once S2PATH . 'classes/Minify/CSS.php';
+use MatthiasMullie\Minify;
 /**
  * Block editor handler class.
  */
@@ -222,7 +223,9 @@ class S2_Core {
 			add_filter( 'wp_mail_content_type', array( $this, 'html_email' ) );
 
 			if ( 'yes' === $this->subscribe2_options['stylesheet'] ) {
-				$style = file_get_contents(get_stylesheet_directory().'/style.css');
+				//$style = file_get_contents(get_stylesheet_directory().'/style.css');
+				$minifier = new Minify\CSS(get_stylesheet_directory().'/style.css');
+				$style = $minifier->minify();
 				$mailtext = apply_filters( 's2_html_email', '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><title>' . $subject . '</title><style>'.$style.'</style><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>' . $message . '</body></html>', $subject, $message ); // phpcs:ignore WordPress.WP.EnqueuedResources
 			} else {
 				$mailtext = apply_filters( 's2_html_email', '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><title>' . $subject . '</title></head><body>' . $message . '</body></html>', $subject, $message );
