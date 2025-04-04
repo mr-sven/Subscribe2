@@ -735,6 +735,20 @@ class S2_Core {
 		}
 
 		$html_excerpt = trim( $post->post_excerpt );
+		//$images = preg_match_all('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $html_excerpt, $matches);
+		$site_url = get_site_url();
+		$html_excerpt = preg_replace_callback('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', function ( $matches ) use ($site_url) {
+			if (!str_starts_with($matches[1], $site_url)) {
+				return '';
+			}
+			$relative_path = str_replace( $site_url, '', $matches[1]);
+
+			$type = pathinfo($relative_path, PATHINFO_EXTENSION);
+			$data = file_get_contents($relative_path);
+			$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+			return '<img src="' . $base64 . '" alt="" />';
+		}, $html_excerpt );
+
 		if ( '' === $html_excerpt ) {
 			// No excerpt, is there a <!--more--> ?
 			if ( false !== strpos( $content, '<!--more-->' ) ) {
@@ -753,8 +767,8 @@ class S2_Core {
 		$plaintext = preg_replace( '/[ ]+/', ' ', $plaintext );
 
 		// Prepare mail body texts.
-		$plain_excerpt_body = str_replace( '{POST}', $excerpt, $mailtext );
-		$plain_body         = str_replace( '{POST}', $plaintext, $mailtext );
+		//$plain_excerpt_body = str_replace( '{POST}', $excerpt, $mailtext );
+		//$plain_body         = str_replace( '{POST}', $plaintext, $mailtext );
 		$html_body          = str_replace( "\r\n", "<br>\r\n", $mailtext );
 		$html_body          = str_replace( '{POST}', $content, $html_body );
 		$html_excerpt_body  = str_replace( "\r\n", "<br>\r\n", $mailtext );
