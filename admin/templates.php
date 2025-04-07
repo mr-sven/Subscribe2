@@ -36,6 +36,9 @@ if (isset($_POST['s2_admin'])) {
                         <?= esc_html__('Subject Line', 'subscribe2') ?>:
                         <input type="text" name="confirm_subject" value="<?= esc_attr($this->subscribe2_options['confirm_subject']) ?>" size="45" /><br>
                         <textarea rows="9" cols="60" name="confirm_email" style="width:95%;"><?= esc_textarea(stripslashes($this->subscribe2_options['confirm_email'])) ?></textarea>
+                        <br>
+                        <br>
+                        <?php submit_button(__('Submit', 'subscribe2'), 'primary', 'submit', true, 'style="display: block; margin: 0 auto;"'); ?>
                     </td>
                     <td style="vertical-align: top;">
                         <p class="submit">
@@ -98,6 +101,5 @@ if (isset($_POST['s2_admin'])) {
                 </tr>
             </table>
         </div>
-        <?php submit_button(__('Submit', 'subscribe2'), 'primary', 'submit', true, 'style="display: block; margin: 0 auto;"'); ?>
     </form>
 </div>
