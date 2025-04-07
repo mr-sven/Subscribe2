@@ -10,7 +10,7 @@ class S2_Admin extends S2_Core {
 	 * @return void
 	 */
 	public function admin_menu() {
-		add_menu_page( __( 'Subscribe2', 'subscribe2' ), __( 'Subscribe2', 'subscribe2' ), apply_filters( 's2_capability', 'read', 'user' ), 's2', null, S2URL . 'include/email-edit.png' );
+		add_menu_page( __( 'Subscribe2', 'subscribe2' ), __( 'Subscribe2', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'manage' ), 's2_tools', null, S2URL . 'include/email-edit.png' );
 
 		$s2subscribers = add_submenu_page( 's2', __( 'Subscribers', 'subscribe2' ), __( 'Subscribers', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'manage' ), 's2_tools', array( $this, 'subscribers_menu' ) );
 
