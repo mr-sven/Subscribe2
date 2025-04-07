@@ -3,22 +3,27 @@
 ?>
 
 <div class="wrap">
-    <h1><?= esc_html__('Subscribers', 'subscribe2') ?></h1>
-    <h2><?= esc_html__('Templates', 'subscribe2') ?></h2>
+    <h1><?= esc_html__('Templates', 'subscribe2') ?></h1>
     <form method="post">
         <input type="hidden" name="s2_admin" />
         <div class="s2_admin" id="s2_templates">
             <p>
                 <table style="width: 100%; border-collapse: separate; border-spacing: 5px;" class="editform">
                     <tr>
-                        <td style="vertical-align: top; height: 350px; min-height: 350px;">
-                            <?= esc_html__('Notification email (must not be empty)', 'subscribe2') ?>:<br>
+                        <td style="vertical-align: top; height: 700px; min-height: 700px;">
+                            <h3><?= esc_html__('Notification email (must not be empty)', 'subscribe2') ?></h3>
                             <?= esc_html__('Subject Line', 'subscribe2') ?>:
                             <input type="text" name="notification_subject" value="<?= esc_attr($this->subscribe2_options['notification_subject']) ?>" size="45" />
                             <br>
                             <textarea rows="9" cols="60" name="mailtext" style="width:95%;"><?= esc_textarea(stripslashes($this->subscribe2_options['mailtext'])) ?></textarea>
+                            <br>
+                            <br>
+                            <h3><?= esc_html__('Subscribe / Unsubscribe confirmation email', 'subscribe2') ?></h3>
+                            <?= esc_html__('Subject Line', 'subscribe2') ?>:
+                            <input type="text" name="confirm_subject" value="<?= esc_attr($this->subscribe2_options['confirm_subject']) ?>" size="45" /><br>
+                            <textarea rows="9" cols="60" name="confirm_email" style="width:95%;"><?= esc_textarea(stripslashes($this->subscribe2_options['confirm_email'])) ?></textarea>
                         </td>
-                        <td style="vertical-align: top;" rowspan="3">
+                        <td style="vertical-align: top;">
                             <p class="submit">
                                 <input type="submit" class="button-secondary" name="preview" value="<?= esc_html__('Send Email Preview', 'subscribe2') ?>" />
                             </p>
@@ -50,14 +55,6 @@
                                 <dt><b>{COUNT}</b></dt><dd><?= wp_kses_post(__('the number of posts included in the digest email<br>(<i>for digest emails only</i>)', 'subscribe2')) ?></dd>
                                 <dt><b>{IMAGE}</b></dt><dd><?= esc_html__("the post's featured image", 'subscribe2') ?></dd>
                             </dl>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="vertical-align: top; height: 350px; min-height: 350px;">
-                            <?= esc_html__('Subscribe / Unsubscribe confirmation email', 'subscribe2') ?>:<br>
-                            <?= esc_html__('Subject Line', 'subscribe2') ?>:
-                            <input type="text" name="confirm_subject" value="<?= esc_attr($this->subscribe2_options['confirm_subject']) ?>" size="45" /><br>
-                            <textarea rows="9" cols="60" name="confirm_email" style="width:95%;"><?= esc_textarea(stripslashes($this->subscribe2_options['confirm_email'])) ?></textarea>
                         </td>
                     </tr>
                 </table>
