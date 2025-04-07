@@ -42,7 +42,6 @@ class S2_List_Table extends WP_List_Table {
 	 * @return mixed|void
 	 */
 	public function column_default( $item, $column_name ) {
-		global $current_tab;
 		switch ( $column_name ) {
 			case 'email':
 			case 'date':
@@ -58,15 +57,7 @@ class S2_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_email( $item ) {
-		global $mysubscribe2, $current_tab;
-
-		if ( 'registered' === $current_tab ) {
-			$actions = array(
-				'edit' => sprintf( '<a href="?page=%s&amp;id=%d">%s</a>', 's2', rawurlencode( $item['id'] ), __( 'Edit', 'subscribe2' ) ),
-			);
-
-			return sprintf( '%1$s %2$s', $item['email'], $this->row_actions( $actions ) );
-		}
+		global $mysubscribe2;
 
 		if ( '0' === $mysubscribe2->is_public( $item['email'] ) ) {
 			return sprintf( '<span style="color:#FF0000"><abbr title="%2$s">%1$s</abbr></span>', $item['email'], $item['ip'] );
@@ -83,13 +74,6 @@ class S2_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_date( $item ) {
-		global $current_tab;
-
-		if ( 'registered' === $current_tab ) {
-			$timestamp = strtotime( $item['date'] );
-			return sprintf( '<abbr title="%2$s">%1$s</abbr>', date_i18n( $this->date_format, $timestamp ), date_i18n( $this->time_format, $timestamp ) );
-		}
-
 		$timestamp = strtotime( $item['date'] . ' ' . $item['time'] );
 		return sprintf( '<abbr title="%2$s">%1$s</abbr>', date_i18n( $this->date_format, $timestamp ), date_i18n( $this->time_format, $timestamp ) );
 	}
@@ -111,8 +95,6 @@ class S2_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
-		global $current_tab;
-
 		$columns = array(
 			'cb'    => '<input type="checkbox" />',
 			'email' => _x( 'Email', 'column name', 'subscribe2' ),
@@ -128,8 +110,6 @@ class S2_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_sortable_columns() {
-		global $current_tab;
-
 		$sortable_columns = array(
 			'email' => array( 'email', true ),
 			'date'  => array( 'date', false ),
@@ -223,18 +203,10 @@ class S2_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_bulk_actions() {
-		global $current_tab;
-
-		$actions = array();
-		if ( 'registered' === $current_tab ) {
-			$actions = ! is_multisite() ? array( 'delete' => __( 'Delete', 'subscribe2' ) ) : $actions;
-		} else {
-			$actions = array(
-				'delete' => __( 'Delete', 'subscribe2' ),
-				'toggle' => __( 'Toggle', 'subscribe2' ),
-			);
-		}
-
+		$actions = array(
+			'delete' => __( 'Delete', 'subscribe2' ),
+			'toggle' => __( 'Toggle', 'subscribe2' ),
+		);
 		return $actions;
 	}
 
@@ -475,7 +447,7 @@ class S2_List_Table extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-		global $mysubscribe2, $subscribers, $current_tab;
+		global $mysubscribe2, $subscribers;
 
 		$user          = get_current_user_id();
 		$screen        = get_current_screen();
@@ -495,23 +467,14 @@ class S2_List_Table extends WP_List_Table {
 		$this->process_bulk_action();
 
 		$data = array();
-		if ( 'public' === $current_tab ) {
-			foreach ( (array) $subscribers as $email ) {
-				$data[] = array(
-					'email' => $email,
-					'date'  => $mysubscribe2->signup_date( $email ),
-					'time'  => $mysubscribe2->signup_time( $email ),
-					'ip'    => $mysubscribe2->signup_ip( $email ),
-				);
-			}
-		} else {
-			foreach ( (array) $subscribers as $subscriber ) {
-				$data[] = array(
-					'email' => $subscriber['user_email'],
-					'id'    => $subscriber['ID'],
-					'date'  => get_userdata( $subscriber['ID'] )->user_registered,
-				);
-			}
+
+		foreach ( (array) $subscribers as $email ) {
+			$data[] = array(
+				'email' => $email,
+				'date'  => $mysubscribe2->signup_date( $email ),
+				'time'  => $mysubscribe2->signup_time( $email ),
+				'ip'    => $mysubscribe2->signup_ip( $email ),
+			);
 		}
 
 		function usort_reorder( $a, $b ) {
