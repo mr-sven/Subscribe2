@@ -13,9 +13,9 @@ if (isset($_POST['s2_admin'])) {
                 if (is_numeric($_POST[$key]) && intval($_POST[$key]) >= 0) {
                     $this->subscribe2_options[$key] = intval($_POST[$key]);
                 }
-            } else {
+            } elseif ($key === 'barred') {
                 if (isset($this->subscribe2_options[$key])) {
-                    $this->subscribe2_options[$key] = sanitize_text_field($_POST[$key]);
+                    $this->subscribe2_options[$key] = sanitize_textarea_field($_POST[$key]);
                 }
             }
         }
