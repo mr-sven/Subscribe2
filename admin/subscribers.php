@@ -310,49 +310,6 @@ $s2_list_table->display();
 
 echo '</div>' . "\r\n";
 
-// Show bulk management form if filtered in some Registered Users.
-if ( 'registered' === $current_tab ) {
-	echo '<div class="s2_admin" id="s2_bulk_manage">' . "\r\n";
-	echo '<h2>' . esc_html__( 'Bulk Management', 'subscribe2' ) . '</h2>' . "\r\n";
-
-	if ( 'never' === $this->subscribe2_options['email_freq'] ) {
-		$manage     = ! empty( $_POST['manage'] ) ? sanitize_text_field( $_POST['manage'] ) : '';
-		$format     = ! empty( $_POST['format'] ) ? sanitize_text_field( $_POST['format'] ) : '';
-		$categories = ! empty( $_POST['category'] ) ? array_map( 'sanitize_key', $_POST['category'] ) : array();
-
-		echo esc_html__( 'Preferences for Registered Users selected above can be changed using this section.', 'subscribe2' ) . '<br>' . "\r\n";
-		echo '<strong><em style="color: red">' . esc_html__( 'Consider User Privacy as changes cannot be undone', 'subscribe2' ) . '</em></strong><br>' . "\r\n";
-		echo '<br>' . esc_html__( 'Action to perform', 'subscribe2' ) . ':' . "\r\n";
-		echo '<label><input type="radio" name="manage" value="subscribe"' . checked( $manage, 'subscribe', false ) . ' /> ' . esc_html__( 'Subscribe', 'subscribe2' ) . '</label>&nbsp;&nbsp;' . "\r\n";
-		echo '<label><input type="radio" name="manage" value="unsubscribe"' . checked( $manage, 'unsubscribe', false ) . ' /> ' . esc_html__( 'Unsubscribe', 'subscribe2' ) . '</label><br><br>' . "\r\n";
-
-		if ( '1' === $this->subscribe2_options['reg_override'] ) {
-			$s2_forms->display_category_form( $categories, 1 );
-		} else {
-			$s2_forms->display_category_form( $categories, 0 );
-		}
-
-		echo '<p class="submit"><button class="button-primary" name="sub_categories" onclick="return bmCheck();">' . esc_html__( 'Bulk Update Categories', 'subscribe2' ) . '</button></p>';
-		echo '<br>' . esc_html__( 'Send email as', 'subscribe2' ) . ':' . "\r\n";
-		echo '<label><input type="radio" name="format" value="html"' . checked( $format, 'html', false ) . ' /> ' . esc_html__( 'HTML - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;' . "\r\n";
-		echo '<label><input type="radio" name="format" value="html_excerpt"' . checked( $format, 'html_excerpt', false ) . ' /> ' . esc_html__( 'HTML - Excerpt', 'subscribe2' ) . '</label>&nbsp;&nbsp;' . "\r\n";
-		echo '<label><input type="radio" name="format" value="post"' . checked( $format, 'post', false ) . ' /> ' . esc_html__( 'Plain Text - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;' . "\r\n";
-		echo '<label><input type="radio" name="format" value="excerpt"' . checked( $format, 'excerpt', false ) . '/> ' . esc_html__( 'Plain Text - Excerpt', 'subscribe2' ) . '</label>' . "\r\n";
-		echo '<p class="submit"><button class="button-primary" name="sub_format" onclick="return bmCheck();">' . esc_html__( 'Bulk Update Format', 'subscribe2' ) . '</button></p>';
-	} else {
-		$sub_cats = ! empty( $_POST['sub_category'] ) ? sanitize_key( $_POST['sub_category'] ) : '';
-
-		echo esc_html__( 'Preferences for Registered Users selected above can be changed using this section.', 'subscribe2' ) . "<br>\r\n";
-		echo '<strong><em style="color: red">' . esc_html__( 'Consider User Privacy as changes cannot be undone.', 'subscribe2' ) . '</em></strong><br>' . "\r\n";
-		echo '<br>' . esc_html__( 'Subscribe Selected Users to receive a periodic digest notification', 'subscribe2' ) . ':' . "\r\n";
-		echo '<label><input type="radio" name="sub_category" value="digest"' . checked( $sub_cats, 'digest', false ) . ' /> ';
-		echo esc_html__( 'Yes', 'subscribe2' ) . '</label>&nbsp;&nbsp;' . "\r\n";
-		echo '<label><input type="radio" name="sub_category" value="-1"' . checked( $sub_cats, '-1', false ) . ' /> ';
-		echo esc_html__( 'No', 'subscribe2' ) . '</label>';
-		echo '<p class="submit"><button class="button-primary" name="sub_digest" onclick="return bmCheck();">' . esc_html__( 'Bulk Update Digest Subscription', 'subscribe2' ) . '</button></p>';
-	}
-	echo '</div>' . "\r\n";
-}
 echo '</form></div>' . "\r\n";
 
 require ABSPATH . 'wp-admin/admin-footer.php';
