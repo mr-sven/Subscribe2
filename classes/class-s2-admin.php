@@ -35,22 +35,6 @@ class S2_Admin extends S2_Core {
 	 *
 	 * @return void
 	 */
-	public function user_help() {
-		$screen = get_current_screen();
-		$screen->add_help_tab(
-			array(
-				'id'      => 's2-user-help1',
-				'title'   => __( 'Overview', 'subscribe2' ),
-				'content' => '<p>' . __( 'From this page you can control your subscription preferences. Choose the email format you wish to receive, which categories you would like to receive notification for and depending on the site settings which authors you would like to read.', 'subscribe2' ) . '</p>',
-			)
-		);
-	}
-
-	/**
-	 * Contextual help.
-	 *
-	 * @return void
-	 */
 	public function subscribers_help() {
 		$screen = get_current_screen();
 		$screen->add_help_tab(
@@ -170,23 +154,6 @@ class S2_Admin extends S2_Core {
 				'title'   => __( 'Miscellaneous', 'subscribe2' ),
 				'content' => '<p>' . __( 'This section contains a place to bar specified domains from becoming Public Subscribers and links to help and support pages.', 'subscribe2' ) .
 				'</p>',
-			)
-		);
-	}
-
-	/**
-	 * Contextual help.
-	 *
-	 * @return void
-	 */
-	public function mail_help() {
-		$screen = get_current_screen();
-		$screen->add_help_tab(
-			array(
-				'id'      => 's2-send-mail-help1',
-				'title'   => __( 'Overview', 'subscribe2' ),
-				'content' => '<p>' . __( 'From this page you can send emails to the recipients in the group selected in the drop down.', 'subscribe2' ) .
-				'</p><p>' . __( '<strong>Preview</strong> will send a preview of the email to the currently logged in user. <strong>Send</strong> will send the email to the recipient list.', 'subscribe2' ) . '</p>',
 			)
 		);
 	}
