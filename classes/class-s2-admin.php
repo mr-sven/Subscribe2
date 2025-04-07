@@ -12,7 +12,7 @@ class S2_Admin extends S2_Core {
 	public function admin_menu() {
 		add_menu_page( __( 'Subscribe2', 'subscribe2' ), __( 'Subscribe2', 'subscribe2' ), apply_filters( 's2_capability', 'read', 'user' ), 's2_tools', null, S2URL . 'include/email-edit.png' );
 
-		$s2subscribers = add_submenu_page( 's2', __( 'Subscribers', 'subscribe2' ), __( 'Subscribers', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'manage' ), 's2_tools', array( $this, 'subscribers_menu' ) );
+		$s2subscribers = add_submenu_page( 's2_tools', __( 'Subscribers', 'subscribe2' ), __( 'Subscribers', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'manage' ), 's2_tools', array( $this, 'subscribers_menu' ) );
 
 		add_action( 'admin_print_scripts-' . $s2subscribers, array( $this, 'checkbox_form_js' ) );
 		add_action( 'admin_print_scripts-' . $s2subscribers, array( $this, 'subscribers_form_js' ) );
@@ -20,7 +20,7 @@ class S2_Admin extends S2_Core {
 		add_action( 'load-' . $s2subscribers, array( $this, 'subscribers_help' ) );
 		add_action( 'load-' . $s2subscribers, array( $this, 'subscribers_options' ) );
 
-		$s2settings = add_submenu_page( 's2', __( 'Settings', 'subscribe2' ), __( 'Settings', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'settings' ), 's2_settings', array( $this, 'settings_menu' ) );
+		$s2settings = add_submenu_page( 's2_tools', __( 'Settings', 'subscribe2' ), __( 'Settings', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'settings' ), 's2_settings', array( $this, 'settings_menu' ) );
 
 		add_action( 'admin_print_scripts-' . $s2settings, array( $this, 'checkbox_form_js' ) );
 		add_action( 'admin_print_scripts-' . $s2settings, array( $this, 'option_form_js' ) );
@@ -29,7 +29,7 @@ class S2_Admin extends S2_Core {
 
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_links' ), 10, 2 );
 
-		$s2mail = add_submenu_page( 's2', __( 'Send Email', 'subscribe2' ), __( 'Send Email', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'send' ), 's2_posts', array( $this, 'write_menu' ) );
+		$s2mail = add_submenu_page( 's2_tools', __( 'Send Email', 'subscribe2' ), __( 'Send Email', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'send' ), 's2_posts', array( $this, 'write_menu' ) );
 
 		add_action( 'load-' . $s2mail, array( $this, 'mail_help' ) );
 	}
