@@ -27,6 +27,8 @@ class S2_Admin extends S2_Core {
 		add_action( 'admin_print_scripts-' . $s2settings, array( $this, 'dismiss_js' ) );
 		add_action( 'load-' . $s2settings, array( $this, 'settings_help' ) );
 
+		$s2templates = add_submenu_page( 's2_tools', __( 'Templates', 'subscribe2' ), __( 'Templates', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'templates' ), 's2_templates', array( $this, 'templates_menu' ) );
+
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_links' ), 10, 2 );
 	}
 
@@ -291,6 +293,15 @@ class S2_Admin extends S2_Core {
 	 */
 	public function settings_menu() {
 		require_once S2PATH . 'admin/settings.php';
+	}
+
+	/**
+	 * Render settings page template.
+	 *
+	 * @return void
+	 */
+	public function templates_menu() {
+		require_once S2PATH . 'admin/templates.php';
 	}
 
 	/**
