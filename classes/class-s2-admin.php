@@ -28,10 +28,6 @@ class S2_Admin extends S2_Core {
 		add_action( 'load-' . $s2settings, array( $this, 'settings_help' ) );
 
 		add_filter( 'plugin_row_meta', array( $this, 'plugin_links' ), 10, 2 );
-
-		$s2mail = add_submenu_page( 's2_tools', __( 'Send Email', 'subscribe2' ), __( 'Send Email', 'subscribe2' ), apply_filters( 's2_capability', 'manage_options', 'send' ), 's2_posts', array( $this, 'write_menu' ) );
-
-		add_action( 'load-' . $s2mail, array( $this, 'mail_help' ) );
 	}
 
 	/**
@@ -328,15 +324,6 @@ class S2_Admin extends S2_Core {
 	 */
 	public function settings_menu() {
 		require_once S2PATH . 'admin/settings.php';
-	}
-
-	/**
-	 * Display the Write sub-menu template.
-	 *
-	 * @return void
-	 */
-	public function write_menu() {
-		require_once S2PATH . 'admin/send-email.php';
 	}
 
 	/**
