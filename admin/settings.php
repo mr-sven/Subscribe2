@@ -49,9 +49,6 @@ if ( isset( $_POST['s2_admin'] ) ) {
 						$this->subscribe2_options[ $option ] = '0';
 					}
 				}
-			} elseif ( in_array( $key, array( 'notification_subject', 'mailtext', 'confirm_subject', 'confirm_email', 'remind_subject', 'remind_email' ), true ) && ! empty( $_POST[ $key ] ) ) {
-				// Email subject and body templates.
-				$this->subscribe2_options[ $key ] = in_array( $key, array( 'notification_subject', 'confirm_subject', 'remind_subject' ) ) ? sanitize_text_field( trim( $_POST[ $key ] ) ) : sanitize_textarea_field( trim( $_POST[ $key ] ) );
 			} elseif ( in_array( $key, array( 'compulsory', 'exclude', 'format' ), true ) ) {
 				sort( $_POST[ $key ] );
 
@@ -154,7 +151,6 @@ echo '<h1>' . esc_html__( 'Settings', 'subscribe2' ) . '</h1>' . "\r\n";
 
 $s2tabs = array(
 	'email'      => __( 'Email Settings', 'subscribe2' ),
-	'templates'  => __( 'Templates', 'subscribe2' ),
 	'registered' => __( 'Registered Users', 'subscribe2' ),
 	'appearance' => __( 'Appearance', 'subscribe2' ),
 	'misc'       => __( 'Miscellaneous', 'subscribe2' ),
@@ -252,68 +248,6 @@ switch ( $current_tab ) {
 		echo '<input type="text" name="tracking" value="' . esc_attr( $this->subscribe2_options['tracking'] ) . '" size="50" /> ';
 		echo '<br>' . esc_html__( 'eg. utm_source=subscribe2&amp;utm_medium=email&amp;utm_campaign=postnotify&amp;utm_id={ID}&amp;utm_title={TITLE}', 'subscribe2' ) . "\r\n";
 		echo '</p>' . "\r\n";
-		echo '</div>' . "\r\n";
-		break;
-
-	case 'templates':
-		// Email templates.
-		echo '<div class="s2_admin" id="s2_templates">' . "\r\n";
-		echo '<p>' . "\r\n";
-		echo '<table style="width: 100%; border-collapse: separate; border-spacing: 5px; *border-collapse: expression( \'separate\', cellSpacing = \'5px\' );" class="editform">' . "\r\n";
-		echo '<tr><td style="vertical-align: top; height: 350px; min-height: 350px;">';
-		echo esc_html__( 'Notification email (must not be empty)', 'subscribe2' ) . ':<br>' . "\r\n";
-		echo esc_html__( 'Subject Line', 'subscribe2' ) . ': ';
-		echo '<input type="text" name="notification_subject" value="' . esc_attr( $this->subscribe2_options['notification_subject'] ) . '" size="45" />';
-		echo '<br>' . "\r\n";
-		echo '<textarea rows="9" cols="60" name="mailtext" style="width:95%;">' . esc_textarea( stripslashes( $this->subscribe2_options['mailtext'] ) ) . '</textarea>' . "\r\n";
-		echo '</td><td style="vertical-align: top;" rowspan="3">';
-		echo '<p class="submit"><input type="submit" class="button-secondary" name="preview" value="' . esc_html__( 'Send Email Preview', 'subscribe2' ) . '" /></p>' . "\r\n";
-		echo '<h3>' . esc_html__( 'Message substitutions', 'subscribe2' ) . '</h3>' . "\r\n";
-		echo '<dl>';
-		echo '<dt><b><em style="color: red">' . esc_html__( 'IF THE FOLLOWING KEYWORDS ARE ALSO IN YOUR POST THEY WILL BE SUBSTITUTED', 'subscribe2' ) . '</em></b></dt><dd></dd>' . "\r\n";
-		echo '<dt><b>{BLOGNAME}</b></dt><dd>' . esc_html( get_option( 'blogname' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{BLOGLINK}</b></dt><dd>' . esc_html( get_option( 'home' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TITLE}</b></dt><dd>' . wp_kses_post( __( "the post's title<br>(<i>for per-post emails only</i>)", 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TITLETEXT}</b></dt><dd>' . wp_kses_post( __( "the post's unformatted title <br>(<i>for per-post emails only</i>)", 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{POST}</b></dt><dd>' . wp_kses_post( __( "the excerpt or the entire post<br>(<i>based on the subscriber's preferences</i>)", 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{POSTTIME}</b></dt><dd>' . wp_kses_post( __( 'the excerpt of the post and the time it was posted<br>(<i>for digest emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TABLE}</b></dt><dd>' . wp_kses_post( __( 'a list of post titles<br>(<i>for digest emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TABLELINKS}</b></dt><dd>' . wp_kses_post( __( 'a list of post titles followed by links to the articles<br>(<i>for digest emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{REFERENCELINKS}</b></dt><dd>' . wp_kses_post( __( 'a reference style list of links at the end of the email with corresponding numbers in the content<br>(<i>for the full content plain text per-post email only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{PERMALINK}</b></dt><dd>' . wp_kses_post( __( "the post's permalink<br>(<i>for per-post emails only</i>)", 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TINYLINK}</b></dt><dd>' . esc_html__( "the post's permalink after conversion by TinyURL", 'subscribe2' ) . '</dd>' . "\r\n";
-		echo '<dt><b>{PERMAURL}</b></dt><dd>' . wp_kses_post( __( "the post's unformatted permalink<br>(<i>for per-post emails only</i>)", 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{DATE}</b></dt><dd>' . wp_kses_post( __( 'the date the post was made<br>(<i>for per-post emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TIME}</b></dt><dd>' . wp_kses_post( __( 'the time the post was made<br>(<i>for per-post emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{MYNAME}</b></dt><dd>' . esc_html__( "the admin or post author's name", 'subscribe2' ) . '</dd>' . "\r\n";
-		echo '<dt><b>{EMAIL}</b></dt><dd>' . esc_html__( "the admin or post author's email", 'subscribe2' ) . ' </dd>' . "\r\n";
-		echo '<dt><b>{AUTHORNAME}</b></dt><dd>' . esc_html__( "the post author's name", 'subscribe2' ) . '</dd>' . "\r\n";
-		echo '<dt><b>{LINK}</b></dt><dd>' . wp_kses_post( __( 'the generated link to confirm a request<br>(<i>only used in the confirmation email template</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-
-		if ( 1 === $this->subscribe2_options['bcclimit'] ) {
-			echo '<dt><b>{UNSUBLINK}</b></dt><dd>' . wp_kses_post( __( 'a generated unsubscribe link<br>(<i>only used in the email notification template</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		}
-
-		echo '<dt><b>{ACTION}</b></dt><dd>' . wp_kses_post( __( 'Action performed by LINK in confirmation email<br>(<i>only used in the confirmation email template</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-		echo '<dt><b>{CATS}</b></dt><dd>' . esc_html__( "the post's assigned categories", 'subscribe2' ) . '</dd>' . "\r\n";
-		echo '<dt><b>{TAGS}</b></dt><dd>' . esc_html__( "the post's assigned Tags", 'subscribe2' ) . '</dd>' . "\r\n";
-		echo '<dt><b>{COUNT}</b></dt><dd>' . wp_kses_post( __( 'the number of posts included in the digest email<br>(<i>for digest emails only</i>)', 'subscribe2' ) ) . '</dd>' . "\r\n";
-
-		if ( current_theme_supports( 'post-thumbnails' ) ) {
-			echo '<dt><b>{IMAGE}</b></dt><dd>' . esc_html__( "the post's featured image", 'subscribe2' ) . '</dd>' . "\r\n";
-		}
-
-		echo '</dl></td></tr><tr><td style="vertical-align: top; height: 350px; min-height: 350px;">';
-		echo esc_html__( 'Subscribe / Unsubscribe confirmation email', 'subscribe2' ) . ':<br>' . "\r\n";
-		echo esc_html__( 'Subject Line', 'subscribe2' ) . ': ';
-		echo '<input type="text" name="confirm_subject" value="' . esc_attr( $this->subscribe2_options['confirm_subject'] ) . '" size="45" /><br>' . "\r\n";
-		echo '<textarea rows="9" cols="60" name="confirm_email" style="width:95%;">' . esc_textarea( stripslashes( $this->subscribe2_options['confirm_email'] ) ) . '</textarea>' . "\r\n";
-		echo '</td></tr><tr><td style="vertical-align: top; height: 350px; min-height: 350px;">';
-		echo esc_html__( 'Reminder email to Unconfirmed Subscribers', 'subscribe2' ) . ':<br>' . "\r\n";
-		echo esc_html__( 'Subject Line', 'subscribe2' ) . ': ';
-		echo '<input type="text" name="remind_subject" value="' . esc_attr( $this->subscribe2_options['remind_subject'] ) . '" size="45" /><br>' . "\r\n";
-		echo '<textarea rows="9" cols="60" name="remind_email" style="width:95%;">' . esc_textarea( stripslashes( $this->subscribe2_options['remind_email'] ) ) . '</textarea><br><br>' . "\r\n";
-		echo '</td></tr></table>' . "\r\n";
 		echo '</div>' . "\r\n";
 		break;
 
