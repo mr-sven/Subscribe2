@@ -323,31 +323,6 @@ switch ( $current_tab ) {
 
 		$s2_forms = new s2_forms();
 
-		// Compulsory categories.
-		echo '<div class="s2_admin" id="s2_compulsory_categories">' . "\r\n";
-		echo '<input type="hidden" name="registered_users_tab" value="options" />' . "\r\n";
-		echo '<h3>' . esc_html__( 'Compulsory Categories', 'subscribe2' ) . '</h3>' . "\r\n";
-		echo '<p>' . "\r\n";
-		echo '<strong><em style="color: red">' . esc_html__( 'Compulsory categories will be checked by default for Registered Subscribers', 'subscribe2' ) . '</em></strong><br>' . "\r\n";
-		echo '</p>';
-
-		$s2_forms->display_category_form( explode( ',', $this->subscribe2_options['compulsory'] ), 1, array(), 'compulsory' );
-
-		echo "</div>\r\n";
-
-		// Excluded categories.
-		echo '<div class="s2_admin" id="s2_excluded_categories">' . "\r\n";
-		echo '<h3>' . esc_html__( 'Excluded Categories', 'subscribe2' ) . '</h3>' . "\r\n";
-		echo '<p>';
-		echo '<strong><em style="color: red">' . esc_html__( 'Posts assigned to any Excluded Category do not generate notifications and are not included in digest notifications', 'subscribe2' ) . '</em></strong><br>' . "\r\n";
-		echo '</p>';
-
-		$s2_forms->display_category_form( explode( ',', $this->subscribe2_options['exclude'] ), 1, array(), 'exclude' );
-
-		echo '<p style="text-align: center;"><label><input type="checkbox" name="reg_override" value="1"' . checked( $this->subscribe2_options['reg_override'], '1', false ) . ' /> ';
-		echo esc_html__( 'Allow registered users to subscribe to excluded categories?', 'subscribe2' ) . '</label></p>' . "\r\n";
-		echo '</div>' . "\r\n";
-
 		// Excluded post formats.
 		$formats = get_theme_support( 'post-formats' );
 		if ( false !== $formats ) {
