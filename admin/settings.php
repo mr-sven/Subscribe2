@@ -24,24 +24,14 @@ if ( isset( $_POST['s2_admin'] ) ) {
 		global $user_email, $post;
 
 		$this->preview_email = true;
-		if ( 'never' === $this->subscribe2_options['email_freq'] ) {
-			$preview_posts = get_posts( 'numberposts=1' );
-			$preview_post  = $preview_posts[0];
+		$preview_posts = get_posts( 'numberposts=1' );
+		$preview_post  = $preview_posts[0];
 
-			$this->publish( $preview_post, $user_email );
-		} else {
-			do_action( 's2_digest_preview', $user_email );
-		}
+		$this->publish( $preview_post, $user_email );
 
 		echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'Preview message(s) sent to logged in user', 'subscribe2' ) . '</strong></p></div>';
 	} elseif ( isset( $_POST['resend'] ) ) {
-		$stickies = get_option( 'sticky_posts' );
-		if ( ! empty( $this->subscribe2_options['last_s2cron'] ) || ( 'yes' === $this->subscribe2_options['stickies'] && ! empty( $stickies ) ) ) {
-			do_action( 's2_digest_resend', 'resend' );
-			echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'Attempt made to resend the Digest Notification email', 'subscribe2' ) . '</strong></p></div>';
-		} else {
-			echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'The Digest Notification email contained no post information. No email was sent', 'subscribe2' ) . '</strong></p></div>';
-		}
+
 	} elseif ( isset( $_POST['submit'] ) ) {
 		foreach ( $_POST as $key => $value ) {
 			if ( in_array( $key, array( 'bcclimit', 's2page', 's2_unsub_page' ), true ) ) {
@@ -49,11 +39,11 @@ if ( isset( $_POST['s2_admin'] ) ) {
 				if ( is_numeric( $_POST[ $key ] ) && intval( $_POST[ $key ] ) >= 0 ) {
 					$this->subscribe2_options[ $key ] = intval( $_POST[ $key ] );
 				}
-			} elseif ( in_array( $key, array( 'show_meta', 'show_button', 'ajax', 'widget', 'counterwidget', 's2meta_default', 'reg_override' ), true ) ) {
+			} elseif ( in_array( $key, array( 'show_meta', 'show_button', 'ajax', 'widget', 's2meta_default', 'reg_override' ), true ) ) {
 				// Check box entries.
 				$this->subscribe2_options[ $key ] = ( isset( $_POST[ $key ] ) && '1' === sanitize_key( $_POST[ $key ] ) ) ? '1' : '0';
 			} elseif ( 'appearance_tab' === $key ) {
-				$options = array( 'show_meta', 'show_button', 'ajax', 'widget', 'counterwidget', 's2meta_default', 'js_ip_updater', 's2_unsub_page' );
+				$options = array( 'show_meta', 'show_button', 'ajax', 'widget', 's2meta_default', 'js_ip_updater', 's2_unsub_page' );
 				foreach ( $options as $option ) {
 					if ( ! isset( $_POST[ $option ] ) ) {
 						$this->subscribe2_options[ $option ] = '0';
@@ -80,41 +70,6 @@ if ( isset( $_POST['s2_admin'] ) ) {
 						} else {
 							$this->subscribe2_options[ $option ] = '';
 						}
-					}
-				}
-			} elseif ( 'email_freq' === $key ) {
-				// Send per-post or digest emails.
-				$email_freq       = ! empty( $_POST['email_freq'] ) ? sanitize_text_field( $_POST['email_freq'] ) : 'never';
-				$scheduled_time   = wp_next_scheduled( 's2_digest_cron' );
-				$timestamp_offset = get_option( 'gmt_offset' ) * 60 * 60;
-				$crondate         = ! empty( $_POST['crondate'] ) ? sanitize_text_field( $_POST['crondate'] ) : 0;
-				$crontime         = ! empty( $_POST['crontime'] ) ? sanitize_text_field( $_POST['crontime'] ) : 0;
-
-				if ( $email_freq !== $this->subscribe2_options['email_freq'] || date_i18n( get_option( 'date_format' ), $scheduled_time + $timestamp_offset ) !== $crondate || gmdate( 'G', $scheduled_time + $timestamp_offset ) !== $crontime ) {
-					$this->subscribe2_options['email_freq'] = $email_freq;
-
-					wp_clear_scheduled_hook( 's2_digest_cron' );
-
-					$schedules = (array) wp_get_schedules();
-					$interval  = ! empty( $schedules[ $email_freq ]['interval'] ) ? intval( $schedules[ $email_freq ]['interval'] ) : 0;
-					if ( 0 === $interval ) {
-						// If we are on per-post emails remove last_cron entry.
-						unset( $this->subscribe2_options['last_s2cron'] );
-					} else {
-						// If we are using digest schedule the event and prime last_cron as now.
-						$time         = time() + $interval;
-						$srttimestamp = strtotime( $crondate ) + ( $crontime * 60 * 60 );
-						if ( ! $srttimestamp ) {
-							$srttimestamp = time();
-						}
-
-						$timestamp = $srttimestamp - $timestamp_offset;
-						while ( $timestamp < time() ) {
-							// If we are trying to set the time in the past increment it forward.
-							$timestamp += $interval; // By the interval period until it is in the future.
-						}
-
-						wp_schedule_event( $timestamp, $email_freq, 's2_digest_cron' );
 					}
 				}
 			} else {
@@ -151,11 +106,7 @@ if ( defined( 'S2GDPR' ) && true === S2GDPR ) {
 	}
 }
 
-if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-	$disallowed_keywords = array( '{TITLE}', '{TITLETEXT}', '{PERMALINK}', '{PERMAURL}', '{DATE}', '{TIME}', '{LINK}', '{ACTION}', '{REFERENCELINKS}' );
-} else {
-	$disallowed_keywords = array( '{POSTTIME}', '{TABLE}', '{TABLELINKS}', '{COUNT}', '{LINK}', '{ACTION}' );
-}
+$disallowed_keywords = array( '{POSTTIME}', '{TABLE}', '{TABLELINKS}', '{COUNT}', '{LINK}', '{ACTION}' );
 
 $disallowed = false;
 foreach ( $disallowed_keywords as $disallowed_keyword ) {
@@ -290,33 +241,12 @@ switch ( $current_tab ) {
 		echo '<label><input type="radio" name="private" value="no"' . checked( $this->subscribe2_options['private'], 'no', false ) . ' /> ';
 		echo esc_html__( 'No', 'subscribe2' ) . '</label><br><br>' . "\r\n";
 
-		if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-			echo esc_html__( 'Include Sticky Posts at the top of all Digest Notifications', 'subscribe2' ) . ': ';
-			echo '<label><input type="radio" name="stickies" value="yes"' . checked( $this->subscribe2_options['stickies'], 'yes', false ) . ' /> ';
-			echo esc_html__( 'Yes', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-			echo '<label><input type="radio" name="stickies" value="no"' . checked( $this->subscribe2_options['stickies'], 'no', false ) . ' /> ';
-			echo esc_html__( 'No', 'subscribe2' ) . '</label><br><br>' . "\r\n";
-		}
-
 		echo esc_html__( 'Send Email From', 'subscribe2' ) . ': ';
 		echo '<label>' . "\r\n";
 
 		$this->admin_dropdown( true );
 
 		echo '</label><br><br>' . "\r\n";
-
-		if ( function_exists( 'wp_schedule_event' ) ) {
-			echo esc_html__( 'Send Emails', 'subscribe2' ) . ': <br>' . "\r\n";
-			$this->display_digest_choices();
-		}
-
-		if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-			echo '<p>' . esc_html__( 'For digest notifications, date order for posts is', 'subscribe2' ) . ': ' . "\r\n";
-			echo '<label><input type="radio" name="cron_order" value="desc"' . checked( $this->subscribe2_options['cron_order'], 'desc', false ) . ' /> ';
-			echo esc_html__( 'Descending', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-			echo '<label><input type="radio" name="cron_order" value="asc"' . checked( $this->subscribe2_options['cron_order'], 'asc', false ) . ' /> ';
-			echo esc_html__( 'Ascending', 'subscribe2' ) . '</label></p>' . "\r\n";
-		}
 
 		echo esc_html__( 'Add Tracking Parameters to the Permalink', 'subscribe2' ) . ': ';
 		echo '<input type="text" name="tracking" value="' . esc_attr( $this->subscribe2_options['tracking'] ) . '" size="50" /> ';
@@ -557,10 +487,6 @@ switch ( $current_tab ) {
 		// Show widget.
 		echo '<label><input type="checkbox" name="widget" value="1"' . checked( $this->subscribe2_options['widget'], '1', false ) . ' /> ';
 		echo esc_html__( 'Enable Subscribe2 Widget?', 'subscribe2' ) . '</label><br><br>' . "\r\n";
-
-		// Show counter widget.
-		echo '<label><input type="checkbox" name="counterwidget" value="1"' . checked( $this->subscribe2_options['counterwidget'], '1', false ) . ' /> ';
-		echo esc_html__( 'Enable Subscribe2 Counter Widget?', 'subscribe2' ) . '</label><br><br>' . "\r\n";
 
 		// Checked s2_meta by default.
 		echo '<label><input type="checkbox" name="s2meta_default" value="1"' . checked( $this->subscribe2_options['s2meta_default'], '1', false ) . ' /> ';

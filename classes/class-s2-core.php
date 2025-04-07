@@ -499,11 +499,6 @@ class S2_Core {
                 return $post;
             }
 
-            // Are we doing daily digests? If so, don't send anything now.
-            if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-                return $post;
-            }
-
             // Is the current post of a type that should generate a notification email?
             // Uses s2_post_types filter to allow for custom post types in WP 3.0
             if ( 'yes' === $this->subscribe2_options['pages'] ) {
@@ -1728,406 +1723,6 @@ class S2_Core {
         register_widget( 'S2_Form_Widget' );
     }
 
-    /**
-     * Register the counter widget.
-     *
-     * @return void
-     */
-    public function counter_widget() {
-        require_once S2PATH . 'classes/class-s2-counter-widget.php';
-        register_widget( 'S2_Counter_Widget' );
-    }
-
-    /**
-     * Add a weekly event to cron.
-     *
-     * @param array $scheds
-     *
-     * @return array
-     */
-    public function add_weekly_sched( $scheds ) {
-        $exists = false;
-        foreach ( $scheds as $sched ) {
-            if ( array_search( 604800, $sched, true ) ) {
-                $exists = true;
-            }
-        }
-
-        if ( ! $exists ) {
-            $scheds['weekly'] = array(
-                'interval' => 604800,
-                'display'  => __( 'Weekly', 'subscribe2' ),
-            );
-        }
-
-        return $scheds;
-    }
-
-    /**
-     * Handle post transitions for the digest email.
-     *
-     * @param string $new_status
-     * @param string $old_status
-     * @param object $post
-     *
-     * @return void
-     */
-    public function digest_post_transitions( $new_status, $old_status, $post ) {
-        if ( $new_status === $old_status ) {
-            return;
-        }
-
-        if ( 'yes' === $this->subscribe2_options['pages'] ) {
-            $s2_post_types = array( 'page', 'post' );
-        } else {
-            $s2_post_types = array( 'post' );
-        }
-
-        $s2_post_types = apply_filters( 's2_post_types', $s2_post_types );
-        if ( ! in_array( $post->post_type, $s2_post_types, true ) ) {
-            return;
-        }
-
-        update_post_meta( $post->ID, '_s2_digest_post_status', ( 'publish' === $new_status ) ? 'pending' : 'draft' );
-    }
-
-    /**
-     * Send a daily digest of today's new posts.
-     *
-     * @param string $preview
-     * @param string $resend
-     *
-     * @return false|void
-     */
-    public function subscribe2_cron( $preview = '', $resend = '' ) {
-        if ( defined( 'DOING_S2_CRON' ) && DOING_S2_CRON ) {
-            return;
-        }
-
-        define( 'DOING_S2_CRON', true );
-
-        global $wpdb;
-
-        if ( empty( $preview ) ) {
-            // Set up SQL query based on options.
-            $status = 'yes' === $this->subscribe2_options['private'] ? "'publish', 'private'" : "'publish'";
-
-            // Send notifications for allowed post type (defaults for posts and pages).
-            // Uses s2_post_types filter to allow for custom post types in WP 3.0
-            $s2_post_types = ( 'yes' === $this->subscribe2_options['pages'] ) ? array( 'page', 'post' ) : array( 'post' );
-            $s2_post_types = apply_filters( 's2_post_types', $s2_post_types );
-
-            foreach ( $s2_post_types as $post_type ) {
-                if ( ! isset( $type ) ) {
-                    $type = $wpdb->prepare( '%s', $post_type );
-                } else {
-                    $type .= $wpdb->prepare( ', %s', $post_type );
-                }
-            }
-
-            // Collect posts.
-            if ( 'resend' === $resend ) {
-                $query = new WP_Query(
-                    array(
-                        'order'               => ( 'desc' === $this->subscribe2_options['cron_order'] ) ? 'DESC' : 'ASC',
-                        'post__in'            => explode( ',', $this->subscribe2_options['last_s2cron'] ),
-                        'ignore_sticky_posts' => 1,
-                    )
-                );
-
-                $posts = $query->posts;
-            } else {
-                $sql   = "SELECT ID, post_title, post_excerpt, post_content, post_type, post_password, post_date, post_author FROM $wpdb->posts AS a INNER JOIN $wpdb->postmeta AS b ON b.post_id = a.ID";
-                $sql  .= " AND b.meta_key = '_s2_digest_post_status' AND b.meta_value = 'pending' WHERE post_status IN ($status) AND post_type IN ($type) ORDER BY post_date " . ( ( 'desc' === $this->subscribe2_options['cron_order'] ) ? 'DESC' : 'ASC' );
-                $posts = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL
-            }
-        } else {
-            global $post;
-            // We are sending a preview, use global if possible otherwise get last post.
-            $posts = empty( $post ) ? get_posts( 'numberposts=1' ) : array( $post );
-        }
-
-        // Collect sticky posts if desired.
-        $sticky_ids = array();
-        if ( 'yes' === $this->subscribe2_options['stickies'] ) {
-            $sticky_ids = get_option( 'sticky_posts' );
-            if ( ! empty( $sticky_ids ) ) {
-                $sticky_posts = get_posts( array( 'post__in' => $sticky_ids ) );
-                $posts        = array_merge( (array) $sticky_posts, (array) $posts );
-            }
-        }
-
-        // Do we have any posts?
-        if ( empty( $posts ) && ! has_filter( 's2_digest_email' ) ) {
-            return false;
-        }
-
-        // Remove the auto embed filter to remove iframes from notification emails.
-        if ( get_option( 'embed_autourls' ) ) {
-            global $wp_embed;
-
-            $priority = has_filter( 'the_content', array( $wp_embed, 'autoembed' ) );
-            if ( false !== $priority ) {
-                remove_filter( 'the_content', array( $wp_embed, 'autoembed' ), $priority );
-            }
-        }
-
-        // If we have posts, let's prepare the digest.
-        // Define some variables needed for the digest.
-        $datetime         = get_option( 'date_format' ) . ' @ ' . get_option( 'time_format' );
-        $all_post_cats    = array();
-        $ids              = array();
-        $digest_post_ids  = array();
-        $mailtext         = apply_filters( 's2_email_template', $this->subscribe2_options['mailtext'] );
-        $table            = '';
-        $tablelinks       = '';
-        $message_post     = '';
-        $message_posttime = '';
-        $this->post_count = count( $posts );
-        $s2_taxonomies    = apply_filters( 's2_taxonomies', array( 'category' ) );
-
-        foreach ( $posts as $digest_post ) {
-            // Keep an array of post ids and skip if we've already done it once.
-            if ( in_array( $digest_post->ID, $ids, true ) ) {
-                continue;
-            }
-
-            $ids[]            = $digest_post->ID;
-            $post_cats        = wp_get_object_terms(
-                $digest_post->ID,
-                $s2_taxonomies,
-                array(
-                    'fields' => 'ids',
-                )
-            );
-            $post_cats_string = implode( ',', $post_cats );
-            $all_post_cats    = array_unique( array_merge( $all_post_cats, $post_cats ) );
-
-            // Make sure we exclude posts from live emails if so configured.
-            $check = false;
-            if ( empty( $preview ) ) {
-                // Pages are put into category 1 so make sure we don't exclude.
-                // Pages if category 1 is excluded.
-                if ( 'page' !== $digest_post->post_type ) {
-                    // Is the current post assigned to any categories, which should not generate a notification email?
-                    foreach ( explode( ',', $this->subscribe2_options['exclude'] ) as $cat ) {
-                        if ( in_array( (int) $cat, $post_cats, true ) ) {
-                            $check = true;
-                        }
-                    }
-                }
-
-                // Is the current post set by the user to not generate a notification email?
-                $s2mail = get_post_meta( $digest_post->ID, '_s2mail', true );
-                if ( 'no' === strtolower( trim( $s2mail ) ) ) {
-                    $check = true;
-                }
-
-                // Is the current post private and should this not generate a notification email?
-                if ( 'no' === $this->subscribe2_options['password'] && '' !== $digest_post->post_password ) {
-                    $check = true;
-                }
-
-                // Is the post assigned a format that should not be included in the notification email?
-                $post_format      = get_post_format( $digest_post->ID );
-                $excluded_formats = explode( ',', $this->subscribe2_options['exclude_formats'] );
-                if ( false !== $post_format && in_array( $post_format, $excluded_formats, true ) ) {
-                    $check = true;
-                }
-
-                // If this post is excluded don't include it in the digest.
-                if ( $check ) {
-                    $this->post_count --;
-                    continue;
-                }
-            }
-
-            // Is the current post set by the user to not generate a notification email?
-            $s2mail = get_post_meta( $digest_post->ID, '_s2mail', true );
-            if ( 'no' === strtolower( trim( $s2mail ) ) ) {
-                $check = true;
-            }
-
-            // Is the current post private and should this not generate a notification email?
-            if ( 'no' === $this->subscribe2_options['password'] && '' !== $digest_post->post_password ) {
-                $check = true;
-            }
-
-            // Is the post assigned a format that should not be included in the notification email?
-            $post_format      = get_post_format( $digest_post->ID );
-            $excluded_formats = explode( ',', $this->subscribe2_options['exclude_formats'] );
-            if ( false !== $post_format && in_array( $post_format, $excluded_formats, true ) ) {
-                $check = true;
-            }
-
-            // If this post is excluded don't include it in the digest.
-            if ( $check ) {
-                continue;
-            }
-
-            $digest_post_ids[] = $digest_post->ID;
-
-            $post_title        = html_entity_decode( $digest_post->post_title, ENT_QUOTES );
-            $table            .= empty( $table ) ? '* ' . $post_title : "\r\n* " . $post_title;
-            $tablelinks       .= empty( $tablelinks ) ? '* ' . $post_title : "\r\n* " . $post_title;
-            $message_post     .= $post_title;
-            $message_posttime .= $post_title;
-
-            if ( strstr( $mailtext, '{AUTHORNAME}' ) ) {
-                $author = get_userdata( $digest_post->post_author );
-                if ( ! empty( $author->display_name ) ) {
-                    $message_post     .= ' (' . __( 'Author', 'subscribe2' ) . ': ' . html_entity_decode( apply_filters( 'the_author', $author->display_name ), ENT_QUOTES ) . ')';
-                    $message_posttime .= ' (' . __( 'Author', 'subscribe2' ) . ': ' . html_entity_decode( apply_filters( 'the_author', $author->display_name ), ENT_QUOTES ) . ')';
-                }
-            }
-
-            $message_post     .= "\r\n";
-            $message_posttime .= "\r\n";
-            $message_posttime .= __( 'Posted on', 'subscribe2' ) . ': ' . mysql2date( $datetime, $digest_post->post_date ) . "\r\n";
-            if ( strstr( $mailtext, '{TINYLINK}' ) ) {
-                $tinylink = wp_safe_remote_get( 'http://tinyurl.com/api-create.php?url=' . rawurlencode( $this->get_tracking_link( get_permalink( $digest_post->ID ) ) ) );
-            } else {
-                $tinylink = false;
-            }
-
-            if ( strstr( $mailtext, '{TINYLINK}' ) && 'Error' !== $tinylink && false !== $tinylink ) {
-                $tablelinks       .= "\r\n" . $tinylink . "\r\n";
-                $message_post     .= $tinylink . "\r\n";
-                $message_posttime .= $tinylink . "\r\n";
-            } else {
-                $tablelinks       .= "\r\n" . $this->get_tracking_link( get_permalink( $digest_post->ID ) ) . "\r\n";
-                $message_post     .= $this->get_tracking_link( get_permalink( $digest_post->ID ) ) . "\r\n";
-                $message_posttime .= $this->get_tracking_link( get_permalink( $digest_post->ID ) ) . "\r\n";
-            }
-
-            if ( strstr( $mailtext, '{CATS}' ) ) {
-                $post_cat_names    = implode(
-                    ', ',
-                    wp_get_object_terms(
-                        $digest_post->ID,
-                        $s2_taxonomies,
-                        array(
-                            'fields' => 'names',
-                        )
-                    )
-                );
-                $message_post     .= __( 'Posted in', 'subscribe2' ) . ': ' . $post_cat_names . "\r\n";
-                $message_posttime .= __( 'Posted in', 'subscribe2' ) . ': ' . $post_cat_names . "\r\n";
-            }
-
-            if ( strstr( $mailtext, '{TAGS}' ) ) {
-                $post_tag_names = implode(
-                    ', ',
-                    wp_get_post_tags(
-                        $digest_post->ID,
-                        array(
-                            'fields' => 'names',
-                        )
-                    )
-                );
-
-                if ( '' !== $post_tag_names ) {
-                    $message_post     .= __( 'Tagged as', 'subscribe2' ) . ': ' . $post_tag_names . "\r\n";
-                    $message_posttime .= __( 'Tagged as', 'subscribe2' ) . ': ' . $post_tag_names . "\r\n";
-                }
-            }
-
-            $message_post     .= "\r\n";
-            $message_posttime .= "\r\n";
-
-            $excerpt = ! empty( $digest_post->post_excerpt ) ? trim( $digest_post->post_excerpt ) : '';
-            if ( empty( $excerpt ) ) {
-                $excerpt = apply_filters( 'the_content', $digest_post->post_content );
-                // No excerpt, is there a <!--more--> ?
-                if ( false !== strpos( $digest_post->post_content, '<!--more-->' ) ) {
-                    list($excerpt, $more) = explode( '<!--more-->', $digest_post->post_content, 2 );
-                    $excerpt              = wp_strip_all_tags( $excerpt );
-                    $excerpt              = strip_shortcodes( $excerpt );
-                } else {
-                    $excerpt = $this->create_excerpt( $excerpt );
-                }
-
-                // Strip leading and trailing whitespace.
-                $excerpt = trim( $excerpt );
-            }
-
-            $message_post     .= $excerpt . "\r\n\r\n";
-            $message_posttime .= $excerpt . "\r\n\r\n";
-        }
-
-        // We are not sending a preview so update post_meta data for sent ids but not sticky posts.
-        if ( empty( $preview ) ) {
-            foreach ( $ids as $id ) {
-                if ( ! empty( $sticky_ids ) && ! in_array( $id, $sticky_ids, true ) ) {
-                    update_post_meta( $id, '_s2_digest_post_status', 'done' );
-                } else {
-                    update_post_meta( $id, '_s2_digest_post_status', 'done' );
-                }
-            }
-
-            $this->subscribe2_options['last_s2cron'] = implode( ',', $digest_post_ids );
-            update_option( 'subscribe2_options', $this->subscribe2_options );
-        }
-
-        // We add a blank line after each post excerpt now trim white space that occurs for the last post.
-        $message_post     = trim( $message_post );
-        $message_posttime = trim( $message_posttime );
-
-        // Remove excess white space from within $message_post and $message_posttime.
-        $message_post     = preg_replace( '/[ ]+/', ' ', $message_post );
-        $message_posttime = preg_replace( '/[ ]+/', ' ', $message_posttime );
-        $message_post     = preg_replace( "/[\r\n]{3,}/", "\r\n\r\n", $message_post );
-        $message_posttime = preg_replace( "/[\r\n]{3,}/", "\r\n\r\n", $message_posttime );
-
-        // Apply filter to allow external content to be inserted or content manipulated.
-        $message_post     = apply_filters( 's2_digest_email', $message_post );
-        $message_posttime = apply_filters( 's2_digest_email', $message_posttime );
-
-        // Sanity check - don't send a mail if the content is empty.
-        if ( ! $message_post && ! $message_posttime && ! $table && ! $tablelinks ) {
-            return;
-        }
-
-        // Get sender details.
-        if ( 'blogname' === $this->subscribe2_options['sender'] ) {
-            $this->myname  = html_entity_decode( get_option( 'blogname' ), ENT_QUOTES );
-            $this->myemail = get_bloginfo( 'admin_email' );
-        } else {
-            $user          = $this->get_userdata( $this->subscribe2_options['sender'] );
-            $this->myemail = $user->user_email;
-            $this->myname  = html_entity_decode( $user->display_name, ENT_QUOTES );
-        }
-
-        $scheds     = (array) wp_get_schedules();
-        $email_freq = $this->subscribe2_options['email_freq'];
-        $display    = $scheds[ $email_freq ]['display'];
-
-        $blogname = get_option( 'blogname' );
-        $subject  = ! empty( $blogname ) ? '[' . stripslashes( html_entity_decode( $blogname, ENT_QUOTES ) ) . '] ' : $blogname;
-
-        $subject .= $display . ' ' . __( 'Digest Email', 'subscribe2' );
-        $mailtext = str_replace( '{TABLELINKS}', $tablelinks, $mailtext );
-        $mailtext = str_replace( '{TABLE}', $table, $mailtext );
-        $mailtext = str_replace( '{POSTTIME}', $message_posttime, $mailtext );
-        $mailtext = str_replace( '{POST}', $message_post, $mailtext );
-
-        // Apply filter to allow custom keywords.
-        $mailtext = apply_filters( 's2_custom_keywords', $mailtext, $digest_post_ids );
-        $mailtext = stripslashes( $this->substitute( $mailtext ) );
-
-        // Prepare recipients.
-        if ( ! empty( $preview ) ) {
-            $this->myemail = $preview;
-            $this->myname  = __( 'Digest Preview', 'subscribe2' );
-            $this->mail( array( $preview ), $subject, $mailtext );
-        } else {
-            $public               = $this->get_public();
-            $all_post_cats_string = implode( ',', $all_post_cats );
-            $registered           = $this->get_registered( "cats=$all_post_cats_string" );
-            $recipients           = array_merge( (array) $public, (array) $registered );
-            $this->mail( $recipients, $subject, $mailtext);
-        }
-    }
 
     /**
      * Task to delete unconfirmed public subscribers after a defined interval.
@@ -2259,9 +1854,6 @@ class S2_Core {
             add_action( 'shutdown', array( $s2_upgrade, 'upgrade' ) );
         }
 
-        // Add core actions.
-        add_filter( 'cron_schedules', array( $this, 'add_weekly_sched' ), 20 );
-
         // Add actions for automatic subscription based on option settings.
         if ( $this->s2_mu ) {
             add_action( 'wpmu_activate_user', array( $s2class_multisite, 'wpmu_add_user' ) );
@@ -2273,21 +1865,16 @@ class S2_Core {
         }
 
         // Add actions for processing posts based on per-post or cron email settings.
-        if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-            add_action( 's2_digest_cron', array( $this, 'subscribe2_cron' ) );
-            add_action( 'transition_post_status', array( $this, 'digest_post_transitions' ), 10, 3 );
-        } else {
-            $statuses = apply_filters( 's2_post_statuses', array( 'new', 'draft', 'auto-draft', 'pending' ) );
-            if ( 'yes' === $this->subscribe2_options['private'] ) {
-                foreach ( $statuses as $status ) {
-                    add_action( "{$status}_to_private", array( $this, 'publish' ) );
-                }
-            }
-
-            array_push( $statuses, 'private', 'future' );
+        $statuses = apply_filters( 's2_post_statuses', array( 'new', 'draft', 'auto-draft', 'pending' ) );
+        if ( 'yes' === $this->subscribe2_options['private'] ) {
             foreach ( $statuses as $status ) {
-                add_action( "{$status}_to_publish", array( $this, 'publish' ) );
+                add_action( "{$status}_to_private", array( $this, 'publish' ) );
             }
+        }
+
+        array_push( $statuses, 'private', 'future' );
+        foreach ( $statuses as $status ) {
+            add_action( "{$status}_to_publish", array( $this, 'publish' ) );
         }
 
         // Add actions for comment subscribers.
@@ -2301,11 +1888,6 @@ class S2_Core {
         // Add action to display widget if option is enabled.
         if ( '1' === $this->subscribe2_options['widget'] ) {
             add_action( 'widgets_init', array( $this, 'subscribe2_widget' ) );
-        }
-
-        // Add action to display counter widget if option is enabled.
-        if ( '1' === $this->subscribe2_options['counterwidget'] ) {
-            add_action( 'widgets_init', array( $this, 'counter_widget' ) );
         }
 
         // Add action to 'clean' unconfirmed Public Subscribers.
@@ -2373,10 +1955,6 @@ class S2_Core {
                 add_action( 'personal_options_update', array( $this, 'one_click_profile_form_save' ) );
                 add_action( 'edit_user_profile_update', array( $this, 'one_click_profile_form_save' ) );
             }
-
-            // Digest email preview and resend actions.
-            add_action( 's2_digest_preview', array( $this, 'digest_preview' ) );
-            add_action( 's2_digest_resend', array( $this, 'digest_resend' ) );
 
             // Add handler to dismiss sender error notice.
             add_action( 'wp_ajax_s2_dismiss_notice', array( $this, 's2_dismiss_notice_handler' ) );

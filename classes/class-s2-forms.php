@@ -62,81 +62,60 @@ class S2_Forms {
 
 		echo '<input type="hidden" name="s2_admin" value="user" />';
 
-		if ( 'never' === $mysubscribe2->subscribe2_options['email_freq'] ) {
-			echo esc_html__( 'Receive email as', 'subscribe2' ) . ': &nbsp;&nbsp;';
-			echo '<label><input type="radio" name="s2_format" value="html"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'html', false ) . ' />';
-			echo ' ' . esc_html__( 'HTML - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-			echo '<label><input type="radio" name="s2_format" value="html_excerpt"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'html_excerpt', false ) . ' />';
-			echo ' ' . esc_html__( 'HTML - Excerpt', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-			echo '<label><input type="radio" name="s2_format" value="post"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'post', false ) . ' />';
-			echo ' ' . esc_html__( 'Plain Text - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-			echo '<label><input type="radio" name="s2_format" value="excerpt"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'excerpt', false ) . ' />';
-			echo ' ' . esc_html__( 'Plain Text - Excerpt', 'subscribe2' ) . '</label><br><br>' . "\r\n";
+		echo esc_html__( 'Receive email as', 'subscribe2' ) . ': &nbsp;&nbsp;';
+		echo '<label><input type="radio" name="s2_format" value="html"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'html', false ) . ' />';
+		echo ' ' . esc_html__( 'HTML - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
+		echo '<label><input type="radio" name="s2_format" value="html_excerpt"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'html_excerpt', false ) . ' />';
+		echo ' ' . esc_html__( 'HTML - Excerpt', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
+		echo '<label><input type="radio" name="s2_format" value="post"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'post', false ) . ' />';
+		echo ' ' . esc_html__( 'Plain Text - Full', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
+		echo '<label><input type="radio" name="s2_format" value="excerpt"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_format' ), true ), 'excerpt', false ) . ' />';
+		echo ' ' . esc_html__( 'Plain Text - Excerpt', 'subscribe2' ) . '</label><br><br>' . "\r\n";
 
-			if ( 'yes' === $mysubscribe2->subscribe2_options['show_autosub'] ) {
-				echo esc_html__( 'Automatically subscribe me to newly created categories', 'subscribe2' ) . ': &nbsp;&nbsp;';
-				echo '<label><input type="radio" name="new_category" value="yes"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_autosub' ), true ), 'yes', false ) . ' />';
-				echo ' ' . esc_html__( 'Yes', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
-				echo '<label><input type="radio" name="new_category" value="no"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_autosub' ), true ), 'no', false ) . ' />';
-				echo ' ' . esc_html__( 'No', 'subscribe2' ) . '</label>';
-				echo '</p>';
-			}
-
-			if ( 'yes' === $mysubscribe2->subscribe2_options['one_click_profile'] ) {
-				// One-click subscribe and unsubscribe buttons.
-				echo '<h2>' . esc_html__( 'One Click Subscription / Unsubscription', 'subscribe2' ) . "</h2>\r\n";
-				echo '<p class="submit"><input type="submit" class="button-primary" name="subscribe" value="' . esc_html__( 'Subscribe to All', 'subscribe2' ) . '" />&nbsp;&nbsp;';
-				echo '<input type="submit" class="button-primary" name="unsubscribe" value="' . esc_html__( 'Unsubscribe from All', 'subscribe2' ) . '" /></p>';
-			}
-
-			// Subscribed categories.
-			if ( $mysubscribe2->s2_mu ) {
-				global $blog_id;
-
-				$subscribed = get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ), true );
-				// If we are subscribed to the current blog display an "unsubscribe" link.
-				if ( ! empty( $subscribed ) ) {
-					$unsubscribe_link = esc_url( add_query_arg( 's2mu_unsubscribe', $blog_id ) );
-					echo '<p><a href="' . esc_url( $unsubscribe_link ) . '" class="button">' . esc_html__( 'Unsubscribe me from this blog', 'subscribe2' ) . '</a></p>';
-				} else {
-					// Else we show a "subscribe" link.
-					$subscribe_link = esc_url( add_query_arg( 's2mu_subscribe', $blog_id ) );
-					echo '<p><a href="' . esc_url( $subscribe_link ) . '" class="button">' . esc_html__( 'Subscribe to all categories', 'subscribe2' ) . '</a></p>';
-				}
-
-				echo '<h2>' . esc_html__( 'Subscribed Categories on', 'subscribe2' ) . ' ' . esc_html( get_option( 'blogname' ) ) . ' </h2>' . "\r\n";
-			} else {
-				echo '<h2>' . esc_html__( 'Subscribed Categories', 'subscribe2' ) . '</h2>' . "\r\n";
-			}
-
-			$compulsory = ! empty( $mysubscribe2->subscribe2_options['compulsory'] ) ? explode( ',', $mysubscribe2->subscribe2_options['compulsory'] ) : array();
-			$this->display_category_form(
-				explode( ',', get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ),true ) ),
-				$mysubscribe2->subscribe2_options['reg_override'],
-				$compulsory
-			);
-		} else {
-			// We're doing daily digests, so just show.
-			// Subscribe / Unsubscribe.
-			echo esc_html__( 'Receive periodic summaries of new posts?', 'subscribe2' ) . ': &nbsp;&nbsp;';
-			echo '<label>';
-			echo '<input type="radio" name="category" value="digest"';
-
-			if ( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ), true ) ) {
-				echo ' checked="checked"';
-			}
-
-			echo ' /> ' . esc_html__( 'Yes', 'subscribe2' ) . '</label> <label><input type="radio" name="category" value="-1" ';
-
-			if ( ! get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ), true ) ) {
-				echo ' checked="checked"';
-			}
-
-			echo ' /> ' . esc_html__( 'No', 'subscribe2' );
-			echo '</label></p>';
+		if ( 'yes' === $mysubscribe2->subscribe2_options['show_autosub'] ) {
+			echo esc_html__( 'Automatically subscribe me to newly created categories', 'subscribe2' ) . ': &nbsp;&nbsp;';
+			echo '<label><input type="radio" name="new_category" value="yes"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_autosub' ), true ), 'yes', false ) . ' />';
+			echo ' ' . esc_html__( 'Yes', 'subscribe2' ) . '</label>&nbsp;&nbsp;';
+			echo '<label><input type="radio" name="new_category" value="no"' . checked( get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_autosub' ), true ), 'no', false ) . ' />';
+			echo ' ' . esc_html__( 'No', 'subscribe2' ) . '</label>';
+			echo '</p>';
 		}
 
-		if ( count( $this->get_authors() ) > 1 && 'never' === $mysubscribe2->subscribe2_options['email_freq'] ) {
+		if ( 'yes' === $mysubscribe2->subscribe2_options['one_click_profile'] ) {
+			// One-click subscribe and unsubscribe buttons.
+			echo '<h2>' . esc_html__( 'One Click Subscription / Unsubscription', 'subscribe2' ) . "</h2>\r\n";
+			echo '<p class="submit"><input type="submit" class="button-primary" name="subscribe" value="' . esc_html__( 'Subscribe to All', 'subscribe2' ) . '" />&nbsp;&nbsp;';
+			echo '<input type="submit" class="button-primary" name="unsubscribe" value="' . esc_html__( 'Unsubscribe from All', 'subscribe2' ) . '" /></p>';
+		}
+
+		// Subscribed categories.
+		if ( $mysubscribe2->s2_mu ) {
+			global $blog_id;
+
+			$subscribed = get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ), true );
+			// If we are subscribed to the current blog display an "unsubscribe" link.
+			if ( ! empty( $subscribed ) ) {
+				$unsubscribe_link = esc_url( add_query_arg( 's2mu_unsubscribe', $blog_id ) );
+				echo '<p><a href="' . esc_url( $unsubscribe_link ) . '" class="button">' . esc_html__( 'Unsubscribe me from this blog', 'subscribe2' ) . '</a></p>';
+			} else {
+				// Else we show a "subscribe" link.
+				$subscribe_link = esc_url( add_query_arg( 's2mu_subscribe', $blog_id ) );
+				echo '<p><a href="' . esc_url( $subscribe_link ) . '" class="button">' . esc_html__( 'Subscribe to all categories', 'subscribe2' ) . '</a></p>';
+			}
+
+			echo '<h2>' . esc_html__( 'Subscribed Categories on', 'subscribe2' ) . ' ' . esc_html( get_option( 'blogname' ) ) . ' </h2>' . "\r\n";
+		} else {
+			echo '<h2>' . esc_html__( 'Subscribed Categories', 'subscribe2' ) . '</h2>' . "\r\n";
+		}
+
+		$compulsory = ! empty( $mysubscribe2->subscribe2_options['compulsory'] ) ? explode( ',', $mysubscribe2->subscribe2_options['compulsory'] ) : array();
+		$this->display_category_form(
+			explode( ',', get_user_meta( $userid, $mysubscribe2->get_usermeta_keyname( 's2_subscribed' ),true ) ),
+			$mysubscribe2->subscribe2_options['reg_override'],
+			$compulsory
+		);
+
+		if ( count( $this->get_authors() ) > 1) {
 			echo '<div class="s2_admin" id="s2_authors">' . "\r\n";
 			echo '<h2>' . esc_html__( 'Do not send notifications for post made by these authors', 'subscribe2' ) . '</h2>' . "\r\n";
 

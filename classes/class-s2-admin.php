@@ -46,23 +46,13 @@ class S2_Admin extends S2_Core {
 	 */
 	public function user_help() {
 		$screen = get_current_screen();
-		if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-			$screen->add_help_tab(
-				array(
-					'id'      => 's2-user-help1',
-					'title'   => __( 'Overview', 'subscribe2' ),
-					'content' => '<p>' . __( 'From this page you can opt in or out of receiving a periodical digest style email of blog posts.', 'subscribe2' ) . '</p>',
-				)
-			);
-		} else {
-			$screen->add_help_tab(
-				array(
-					'id'      => 's2-user-help1',
-					'title'   => __( 'Overview', 'subscribe2' ),
-					'content' => '<p>' . __( 'From this page you can control your subscription preferences. Choose the email format you wish to receive, which categories you would like to receive notification for and depending on the site settings which authors you would like to read.', 'subscribe2' ) . '</p>',
-				)
-			);
-		}
+		$screen->add_help_tab(
+			array(
+				'id'      => 's2-user-help1',
+				'title'   => __( 'Overview', 'subscribe2' ),
+				'content' => '<p>' . __( 'From this page you can control your subscription preferences. Choose the email format you wish to receive, which categories you would like to receive notification for and depending on the site settings which authors you would like to read.', 'subscribe2' ) . '</p>',
+			)
+		);
 	}
 
 	/**
@@ -247,13 +237,6 @@ class S2_Admin extends S2_Core {
 	public function option_form_js() {
 		wp_register_script( 's2_edit', S2URL . 'include/s2-edit' . $this->script_debug . '.js', array( 'jquery' ), '1.3', true );
 		wp_enqueue_script( 's2_edit' );
-
-		if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-			wp_enqueue_script( 'jquery-ui-datepicker' );
-			wp_enqueue_style( 'jquery-style', 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css', array(), '1.12.1' );
-			wp_register_script( 's2_date_time', S2URL . 'include/s2-date-time' . $this->script_debug . '.js', array( 'jquery-ui-datepicker' ), '1.1', true );
-			wp_enqueue_script( 's2_date_time' );
-		}
 	}
 
 	/**
@@ -528,12 +511,7 @@ class S2_Admin extends S2_Core {
 			}
 
 			global $post, $current_user;
-
-			if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-				$this->subscribe2_cron( $current_user->user_email );
-			} else {
-				$this->publish( $post, $current_user->user_email );
-			}
+			$this->publish( $post, $current_user->user_email );
 		}
 	}
 
@@ -789,27 +767,27 @@ class S2_Admin extends S2_Core {
 		}
 
 		$count['all'] = ( $count['confirmed'] + $count['unconfirmed'] + $count['all_users'] );
-		// Get subscribers to individual categories but only if we are using per-post notifications.
-		if ( 'never' === $this->subscribe2_options['email_freq'] ) {
-			$compulsory = explode( ',', $this->subscribe2_options['compulsory'] );
-			if ( $this->s2_mu ) {
-				foreach ( $all_cats as $cat ) {
-					if ( in_array( (string) $cat->term_id, $compulsory, true ) ) {
-						$count[ $cat->name ] = $count['all_users'];
-					} else {
-						$count[ $cat->name ] = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(a.meta_key) FROM $wpdb->usermeta AS a INNER JOIN $wpdb->usermeta AS b ON a.user_id = b.user_id WHERE a.meta_key='" . $wpdb->prefix . "capabilities' AND b.meta_key=%s", $this->get_usermeta_keyname( 's2_cat' ) . $cat->term_id ) );
-					}
+
+
+		$compulsory = explode( ',', $this->subscribe2_options['compulsory'] );
+		if ( $this->s2_mu ) {
+			foreach ( $all_cats as $cat ) {
+				if ( in_array( (string) $cat->term_id, $compulsory, true ) ) {
+					$count[ $cat->name ] = $count['all_users'];
+				} else {
+					$count[ $cat->name ] = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(a.meta_key) FROM $wpdb->usermeta AS a INNER JOIN $wpdb->usermeta AS b ON a.user_id = b.user_id WHERE a.meta_key='" . $wpdb->prefix . "capabilities' AND b.meta_key=%s", $this->get_usermeta_keyname( 's2_cat' ) . $cat->term_id ) );
 				}
-			} else {
-				foreach ( $all_cats as $cat ) {
-					if ( in_array( (string) $cat->term_id, $compulsory, true ) ) {
-						$count[ $cat->name ] = $count['all_users'];
-					} else {
-						$count[ $cat->name ] = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(meta_value) FROM $wpdb->usermeta WHERE meta_key=%s", $this->get_usermeta_keyname( 's2_cat' ) . $cat->term_id ) );
-					}
+			}
+		} else {
+			foreach ( $all_cats as $cat ) {
+				if ( in_array( (string) $cat->term_id, $compulsory, true ) ) {
+					$count[ $cat->name ] = $count['all_users'];
+				} else {
+					$count[ $cat->name ] = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(meta_value) FROM $wpdb->usermeta WHERE meta_key=%s", $this->get_usermeta_keyname( 's2_cat' ) . $cat->term_id ) );
 				}
 			}
 		}
+
 
 		echo '<select name="what">' . "\r\n";
 
@@ -827,7 +805,7 @@ class S2_Admin extends S2_Core {
 			echo '>' . esc_html( $display ) . ' (' . esc_html( $count[ $whom ] ) . ')</option>' . "\r\n";
 		}
 
-		if ( 'public' !== $current_tab && $count['registered'] > 0 && 'never' === $this->subscribe2_options['email_freq'] ) {
+		if ( 'public' !== $current_tab && $count['registered'] > 0 ) {
 			foreach ( $all_cats as $cat ) {
 				if ( in_array( (string) $cat->term_id, $exclude, true ) ) {
 					continue;
@@ -915,97 +893,6 @@ class S2_Admin extends S2_Core {
 		);
 
 		echo wp_kses( $option, $allowed_tags );
-	}
-
-	/**
-	 * Display a dropdown of choices for digest email frequency.
-	 * and give user details of timings when event is scheduled.
-	 */
-	public function display_digest_choices() {
-		global $wpdb;
-
-		$cron_file = ABSPATH . 'wp-cron.php';
-		if ( ! is_readable( $cron_file ) ) {
-			echo '<strong><em style="color: red">' . esc_html__( 'The WordPress cron functions may be disabled on this server. Digest notifications may not work.', 'subscribe2' ) . '</em></strong><br>' . "\r\n";
-		}
-
-		$scheduled_time = wp_next_scheduled( 's2_digest_cron' );
-		$offset         = get_option( 'gmt_offset' ) * 60 * 60;
-		$schedule       = (array) wp_get_schedules();
-		$schedule       = array_merge(
-			array(
-				'never' => array(
-					'interval' => 0,
-					'display'  => __( 'For each Post', 'subscribe2' ),
-				),
-			),
-			$schedule
-		);
-
-		$sort = array();
-		foreach ( (array) $schedule as $key => $value ) {
-			$sort[ $key ] = $value['interval'];
-		}
-
-		asort( $sort );
-
-		$schedule_sorted = array();
-		foreach ( $sort as $key => $value ) {
-			if ( ! preg_match('/never|weekly|monthly|twicedaily|hourly/', $key ) ) {
-				continue;
-			}
-
-			$schedule_sorted[ $key ] = $schedule[ $key ];
-		}
-
-		foreach ( $schedule_sorted as $key => $value ) {
-			echo '<label><input type="radio" name="email_freq" value="' . esc_attr( $key ) . '"' . checked( $this->subscribe2_options['email_freq'], $key, false ) . ' />';
-			echo ' ' . esc_html( $value['display'] ) . '</label><br>' . "\r\n";
-		}
-
-		if ( $scheduled_time ) {
-			$date_format = get_option( 'date_format' );
-			$time_format = get_option( 'time_format' );
-
-			echo '<p>' . esc_html__( 'Current UTC time is', 'subscribe2' ) . ': ' . "\r\n";
-			echo '<strong>' . esc_html( date_i18n( $date_format . ' @ ' . $time_format, false, 'gmt' ) ) . '</strong></p>' . "\r\n";
-			echo '<p>' . esc_html__( 'Current blog time is', 'subscribe2' ) . ': ' . "\r\n";
-			echo '<strong>' . esc_html( date_i18n( $date_format . ' @ ' . $time_format ) ) . '</strong></p>' . "\r\n";
-			echo '<p>' . esc_html__( 'Next email notification will be sent when your blog time is after', 'subscribe2' ) . ': ' . "\r\n";
-			echo '<input type="hidden" id="jscrondate" value="' . esc_attr( date_i18n( $date_format, $scheduled_time + $offset ) ) . '" />';
-			echo '<input type="hidden" id="jscrontime" value="' . esc_attr( date_i18n( $time_format, $scheduled_time + $offset ) ) . '" />';
-			echo '<span id="s2cron_1"><span id="s2crondate" style="background-color: #FFFBCC">' . esc_html( date_i18n( $date_format, $scheduled_time + $offset ) ) . '</span>';
-			echo ' @ <span id="s2crontime" style="background-color: #FFFBCC">' . esc_html( date_i18n( $time_format, $scheduled_time + $offset ) ) . '</span> ';
-			echo '<a href="#" onclick="s2Show(\'cron\'); return false;">' . esc_html__( 'Edit', 'subscribe2' ) . '</a></span>' . "\r\n";
-			echo '<span id="s2cron_2">' . "\r\n";
-			echo '<input id="s2datepicker" name="crondate" value="' . esc_attr( date_i18n( $date_format, $scheduled_time + $offset ) ) . '">' . "\r\n";
-
-			$hours        = array( '12:00 am', '1:00 am', '2:00 am', '3:00 am', '4:00 am', '5:00 am', '6:00 am', '7:00 am', '8:00 am', '9:00 am', '10:00 am', '11:00 am', '12:00 pm', '1:00 pm', '2:00 pm', '3:00 pm', '4:00 pm', '5:00 pm', '6:00 pm', '7:00 pm', '8:00 pm', '9:00 pm', '10:00 pm', '11:00 pm' );
-			$current_hour = intval( date_i18n( 'G', $scheduled_time + $offset ) );
-
-			echo '<select name="crontime">' . "\r\n";
-
-			foreach ( $hours as $key => $value ) {
-				echo '<option value="' . esc_attr( $key ) . '"';
-
-				if ( ! empty( $scheduled_time ) && $key === $current_hour ) {
-					echo ' selected="selected"';
-				}
-
-				echo '>' . esc_html( $value ) . '</option>' . "\r\n";
-			}
-
-			echo '</select>' . "\r\n";
-			echo '<a href="#" onclick="s2CronUpdate(\'cron\'); return false;">' . esc_html__( 'Update', 'subscribe2' ) . '</a>' . "\r\n";
-			echo '<a href="#" onclick="s2CronRevert(\'cron\'); return false;">' . esc_html__( 'Revert', 'subscribe2' ) . '</a></span>' . "\r\n";
-
-			if ( ! empty( $this->subscribe2_options['last_s2cron'] ) ) {
-				echo '<p>' . esc_html__( 'Attempt to resend the last Digest Notification email', 'subscribe2' ) . ': ';
-				echo '<input type="submit" class="button-secondary" name="resend" value="' . esc_attr( __( 'Resend Digest', 'subscribe2' ) ) . '" /></p>' . "\r\n";
-			}
-		} else {
-			echo '<br>';
-		}
 	}
 
 	/**
@@ -1231,26 +1118,6 @@ class S2_Admin extends S2_Core {
 		global $wpdb;
 
 		$user_ids = '';
-		if ( 'never' !== $this->subscribe2_options['email_freq'] ) {
-			// If we are doing digests add new categories to users who are currently opted in.
-			$user_ids = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT DISTINCT user_id FROM $wpdb->usermeta WHERE meta_key=%s AND meta_value<>''",
-					$this->get_usermeta_keyname( 's2_subscribed' )
-				)
-			);
-
-			foreach ( $user_ids as $user_id ) {
-				$old_cats = get_user_meta( $user_id, $this->get_usermeta_keyname( 's2_subscribed' ), true );
-				$old_cats = explode( ',', $old_cats );
-				$newcats  = array_merge( $old_cats, (array) $new_category );
-
-				update_user_meta( $user_id, $this->get_usermeta_keyname( 's2_cat' ) . $new_category, $new_category );
-				update_user_meta( $user_id, $this->get_usermeta_keyname( 's2_subscribed' ), implode( ',', $newcats ) );
-			}
-
-			return;
-		}
 
 		if ( 'yes' === $this->subscribe2_options['show_autosub'] ) {
 			if ( $this->s2_mu ) {
@@ -1373,34 +1240,6 @@ class S2_Admin extends S2_Core {
 			$this->one_click_handler( $user_id, 'subscribe' ); // Subscribe.
 		} else {
 			$this->one_click_handler( $user_id, 'unsubscribe' ); // Unsubscribe.
-		}
-	}
-
-	/**
-	 * Core function to hook the digest email preview to the action on the Settings page.
-	 *
-	 * @param string $user_email
-	 *
-	 * @return void
-	 */
-	public function digest_preview( $user_email = '' ) {
-		if ( false === $this->validate_email( $user_email ) ) {
-			return;
-		}
-
-		$this->subscribe2_cron( $user_email );
-	}
-
-	/**
-	 * Core function to hook the resent digest email to the action on the Settings page.
-	 *
-	 * @param string $resend
-	 *
-	 * @return void
-	 */
-	public function digest_resend( $resend ) {
-		if ( 'resend' === $resend ) {
-			$this->subscribe2_cron( '', 'resend' );
 		}
 	}
 

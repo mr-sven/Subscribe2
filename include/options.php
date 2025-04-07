@@ -84,10 +84,6 @@ if ( ! isset( $mysubscribe2->subscribe2_options['private'] ) ) {
 	$mysubscribe2->subscribe2_options['private'] = 'no';
 } // option for sending notifications for posts that are private
 
-if ( ! isset( $mysubscribe2->subscribe2_options['email_freq'] ) ) {
-	$mysubscribe2->subscribe2_options['email_freq'] = 'never';
-} // option for sending emails per-post or as a digest email on a cron schedule
-
 if ( ! isset( $mysubscribe2->subscribe2_options['cron_order'] ) ) {
 	$mysubscribe2->subscribe2_options['cron_order'] = 'desc';
 } // option for ordering of posts in digest email
@@ -123,10 +119,6 @@ if ( ! isset( $mysubscribe2->subscribe2_options['ajax'] ) ) {
 if ( ! isset( $mysubscribe2->subscribe2_options['widget'] ) ) {
 	$mysubscribe2->subscribe2_options['widget'] = '1';
 } // option to enable Subscribe2 Widget
-
-if ( ! isset( $mysubscribe2->subscribe2_options['counterwidget'] ) ) {
-	$mysubscribe2->subscribe2_options['counterwidget'] = '0';
-} // option to enable Subscribe2 Counter Widget
 
 if ( ! isset( $mysubscribe2->subscribe2_options['s2meta_default'] ) ) {
 	$mysubscribe2->subscribe2_options['s2meta_default'] = '0';

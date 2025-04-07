@@ -648,10 +648,6 @@ class S2_Upgrade {
 	private function upgrade9_5() {
 		global $mysubscribe2;
 
-		if ( 'never' !== $mysubscribe2->subscribe2_options['email_freq'] ) {
-			$mysubscribe2->subscribe2_options['last_s2cron'] = '';
-			unset( $mysubscribe2->subscribe2_options['previous_s2cron'] );
-		}
 	}
 
 	/**
