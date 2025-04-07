@@ -923,21 +923,16 @@ class S2_Core {
      *
      * @param int $confirmed
      *
-     * @return array|string
+     * @return array
      */
     public function get_public( $confirmed = 1 ) {
         global $wpdb;
 
-        static $all_confirmed   = '';
-        static $all_unconfirmed = '';
-
         if ( 1 === $confirmed ) {
-            $all_confirmed = empty( $all_confirmed ) ? $wpdb->get_col( "SELECT email FROM $wpdb->subscribe2 WHERE active='1'" ) : $all_confirmed;
-            return $all_confirmed;
+            return $wpdb->get_col( "SELECT email FROM $wpdb->subscribe2 WHERE active='1'" ) ?? [];
         }
 
-        $all_unconfirmed = empty( $all_unconfirmed ) ? $wpdb->get_col( "SELECT email FROM $wpdb->subscribe2 WHERE active='0'" ) : $all_unconfirmed;
-        return $all_unconfirmed;
+        return $wpdb->get_col( "SELECT email FROM $wpdb->subscribe2 WHERE active='0'" )  ?? [];
     }
 
     /**

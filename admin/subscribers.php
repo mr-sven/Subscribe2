@@ -11,8 +11,8 @@ if ( ! class_exists( 'Subscribe2_List_Table' ) ) {
 }
 
 // Get Public Subscribers.
-$confirmed   = $this->get_public() ?? [];
-$unconfirmed = $this->get_public(0) ?? [];
+$confirmed   = $this->get_public();
+$unconfirmed = $this->get_public(0);
 
 $what        = 'public';
 $subscribers = array_merge($confirmed, $unconfirmed);
