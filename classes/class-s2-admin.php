@@ -331,15 +331,6 @@ class S2_Admin extends S2_Core {
 	}
 
 	/**
-	 * Render user profile menu template.
-	 *
-	 * @return void
-	 */
-	public function user_menu() {
-		require_once S2PATH . 'admin/your-subscriptions.php';
-	}
-
-	/**
 	 * Display the Write sub-menu template.
 	 *
 	 * @return void
