@@ -19,6 +19,8 @@ if (isset($_POST['s2_admin'])) {
                 }
             }
         }
+        echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'Options saved!', 'subscribe2' ) . '</strong></p></div>';
+        update_option( 'subscribe2_options', $this->subscribe2_options );
     }
 }
 ?>

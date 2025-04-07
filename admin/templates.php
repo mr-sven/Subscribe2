@@ -13,6 +13,9 @@ if (isset($_POST['s2_admin'])) {
                 $this->subscribe2_options[$key] = in_array($key, ['notification_subject', 'confirm_subject']) ? sanitize_text_field(trim($_POST[$key])) : sanitize_textarea_field(trim($_POST[$key]));
             }
         }
+
+		echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'Options saved!', 'subscribe2' ) . '</strong></p></div>';
+		update_option( 'subscribe2_options', $this->subscribe2_options );
     }
 }
 ?>
