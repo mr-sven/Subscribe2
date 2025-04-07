@@ -56,13 +56,9 @@ $s2_list_table->prepare_items();
                         <?php $this->display_subscriber_dropdown( $what, __( 'Filter', 'subscribe2' ), ['all', 'all_users', 'registered'] )?>
                     </td>
                     <td style="width: 25%;"></td>
-                    <?php if(!empty($subscribers)):
-                        $exportcsv = '';
-                        foreach ( $subscribers as $subscriber ) {
-                            $exportcsv .= empty( $exportcsv ) ? $subscriber['user_email'] : ",\r\n" . $subscriber['user_email'];
-                        }?>
+                    <?php if(!empty($subscribers)):?>
                     <td style="width: 25%; text-align: right;">
-                        <input type="hidden" name="exportcsv" value="<?=esc_attr( $exportcsv )?>" />
+                        <input type="hidden" name="exportcsv" value="<?=esc_attr( implode( ",\r\n", $subscribers ) )?>" />
                         <input type="submit" class="button-secondary" name="csv" value="<?esc_attr( __( 'Save Emails to CSV File', 'subscribe2' ) )?>" />
                     </td>
                     <?php else:?>
