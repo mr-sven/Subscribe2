@@ -1,5 +1,7 @@
 <?php defined('ABSPATH') or die('NO!');
 
+global $subscribers, $what;
+
 // Instantiate and prepare our table data - this also runs the bulk actions.
 if ( ! class_exists( 'WP_List_Table' ) ) {
     require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -59,7 +61,7 @@ $s2_list_table->prepare_items();
                     <?php if(!empty($subscribers)):?>
                     <td style="width: 25%; text-align: right;">
                         <input type="hidden" name="exportcsv" value="<?=esc_attr( implode( ",\r\n", $subscribers ) )?>" />
-                        <input type="submit" class="button-secondary" name="csv" value="<?esc_attr( __( 'Save Emails to CSV File', 'subscribe2' ) )?>" />
+                        <input type="submit" class="button-secondary" name="csv" value="<?=esc_attr( __( 'Save Emails to CSV File', 'subscribe2' ) )?>" />
                     </td>
                     <?php else:?>
                     <td style="width: 25%;"></td>
