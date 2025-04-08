@@ -34,10 +34,8 @@ class SubscribersTable extends \WP_List_Table
         $this->table_data = $this->get_table_data();
 
         $columns = $this->get_columns();
-        $sortable = $this->get_sortable_columns();
-
         $hidden = [];
-        $sortable = [];
+        $sortable = $this->get_sortable_columns();
         $primary  = 'email';
         $this->_column_headers = [$columns, $hidden, $sortable, $primary];
         usort($this->table_data, [&$this, 'usort_reorder']);
