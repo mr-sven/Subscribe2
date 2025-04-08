@@ -9,6 +9,38 @@ class SubscribersTable extends \WP_List_Table
     // define $table_data property
     private $table_data;
 
+    /**
+     * Class constructor
+     */
+    public function __construct()
+    {
+        parent::__construct([
+            'singular' => 'subscriber',
+            'plural'   => 'subscribers',
+            'ajax'     => false,
+        ]);
+    }
+
+    public function process_bulk_action()
+    {
+        // security check!
+        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-' . $this->_args['plural'])) {
+            echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
+            return;
+        }
+
+        $action = $this->current_action();
+
+        switch ($action) {
+
+            case 'delete_all':
+                break;
+
+            default:
+                return;
+        }
+    }
+
     // Get table data
     private function get_table_data($filter = 'all', $search = '')
     {
@@ -59,6 +91,8 @@ class SubscribersTable extends \WP_List_Table
     // Bind table with columns, data and all
     public function prepare_items()
     {
+		$this->process_bulk_action();
+
         $filter = (isset($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
 
         if (isset($_POST['s'])) {
