@@ -38,7 +38,7 @@ class SubscribersTable extends \WP_List_Table
             }
             if ($action == 'delete_all') {
                 foreach ($_POST['element'] as $id) {
-                    $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
+                   // $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
                 }
             }
         } else if (isset($_GET['_wpnonce']) && !empty($_GET['_wpnonce'])) {
@@ -47,7 +47,7 @@ class SubscribersTable extends \WP_List_Table
                 return;
             }
             if ($action == 'delete') {
-                $wpdb->delete($wpdb->smini, ['id' => (int)$_GET['element']]);
+                //$wpdb->delete($wpdb->smini, ['id' => (int)$_GET['element']]);
             }
         }
     }
