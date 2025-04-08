@@ -57,12 +57,12 @@ class SubscribersTable extends \WP_List_Table
         }
     }
 
-    function column_cb($item)
+    public function column_cb($item)
     {
         return sprintf('<input type="checkbox" name="element[]" value="%s" />', $item['id']);
     }
 
-    protected function get_sortable_columns()
+    public function get_sortable_columns()
     {
         return [
             'email'  => ['email', true],
