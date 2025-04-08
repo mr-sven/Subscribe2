@@ -31,20 +31,24 @@ class SubscribersTable extends \WP_List_Table
         }
 
         // security check!
-        if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-' . $this->_args['plural'])) {
-            echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
-            return;
-        }
-
-        switch ($action) {
-            case 'delete_all':
-                foreach ($_REQUEST['element'] as $id) {
+        if (isset($_POST['_wpnonce']) && !empty($_POST['_wpnonce'])) {
+            if (!wp_verify_nonce(sanitize_key($_POST['_wpnonce']), 'bulk-' . $this->_args['plural'])) {
+                echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
+                return;
+            }
+            if ($action == 'delete_all') {
+                foreach ($_POST['element'] as $id) {
                     $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
                 }
-                break;
-
-            default:
+            }
+        } else if (isset($_GET['_wpnonce']) && !empty($_GET['_wpnonce'])) {
+            if (!wp_verify_nonce(sanitize_key($_GET['_wpnonce']), 'delete-' . $this->_args['singular'])) {
+                echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
                 return;
+            }
+            if ($action == 'delete') {
+                $wpdb->delete($wpdb->smini, ['id' => (int)$_GET['element']]);
+            }
         }
     }
 
@@ -152,7 +156,7 @@ class SubscribersTable extends \WP_List_Table
     // Adding action links to column
     public function column_email($item)
     {
-        $_wpnonce = esc_attr(wp_create_nonce("delete-".$this->_args['singular']));
+        $_wpnonce = esc_attr(wp_create_nonce("delete-" . $this->_args['singular']));
         $actions = [
             'delete' => sprintf('<a href="?page=%s&action=%s&element=%s&_wpnonce=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'], $_wpnonce)
         ];
