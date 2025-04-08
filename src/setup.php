@@ -6,7 +6,10 @@ namespace SMini;
 
 defined('ABSPATH') or die('NO!');
 
-namespace SMini;
+define('SM_SETTING_ADMIN_EMAIL', 'admin_email');
+define('SM_SETTING_SUB_PAGE', 'sub_page');
+define('SM_SETTING_UNSUB_PAGE', 'unsub_page');
+define('SM_SETTING_BARRED', 'barred');
 
 class Setup
 {

@@ -17,6 +17,7 @@ class Admin
 
     public function __construct()
     {
+        Setup::prepare();
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'admin_init']);
     }
@@ -44,14 +45,14 @@ class Admin
     {
         add_settings_section('smini_settings', '', null, 'smini_options');
         add_settings_field(
-            'admin_email',
+            SM_SETTING_ADMIN_EMAIL,
             __('Send Admins notifications for new', SMLD),
             [$this, 'create_radio'],
             'smini_options',
             'smini_settings',
             [
-                'label_for' => 'admin_email',
-                'class' => 'admin_email',
+                'label_for' => SM_SETTING_ADMIN_EMAIL,
+                'class' => SM_SETTING_ADMIN_EMAIL,
                 'options' => [
                     [
                         'value' => 'subs',
@@ -72,9 +73,9 @@ class Admin
                 ]
             ]
         );
-        add_settings_field('sub_page', __('Set default Subscribe Mini page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'sub_page', 'class' => 'sub_page']);
-        add_settings_field('unsub_page', __('Set Subscribe Mini unsubscribe page', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'unsub_page', 'class' => 'unsub_page']);
-        add_settings_field('barred',__('Barred Domains', SMLD), [$this, 'create_textarea'], 'smini_options', 'smini_settings', ['label_for' => 'barred', 'class' => 'barred', 'hint' => [
+        add_settings_field(SM_SETTING_SUB_PAGE, __('Set default Subscribe Mini page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_SUB_PAGE, 'class' => SM_SETTING_SUB_PAGE]);
+        add_settings_field(SM_SETTING_UNSUB_PAGE, __('Set Subscribe Mini unsubscribe page', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_UNSUB_PAGE, 'class' => SM_SETTING_UNSUB_PAGE]);
+        add_settings_field(SM_SETTING_BARRED, __('Barred Domains', SMLD), [$this, 'create_textarea'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_BARRED, 'class' => SM_SETTING_BARRED, 'hint' => [
             __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', SMLD),
             __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', SMLD)
         ]]);
@@ -91,6 +92,34 @@ class Admin
     {
         $new_input = [];
 
+        $all_settings = [
+            SM_SETTING_ADMIN_EMAIL,
+            SM_SETTING_SUB_PAGE,
+            SM_SETTING_UNSUB_PAGE,
+            SM_SETTING_BARRED
+        ];
+
+        foreach ($all_settings as $key) {
+            if (isset($this->options[$key])) {
+                $new_input[$key] = $this->options[$key];
+            }
+
+            if (in_array($key, array(SM_SETTING_SUB_PAGE, SM_SETTING_UNSUB_PAGE), true)) {
+                // Numerical inputs fixed for old option names.
+                if (is_numeric($input[$key]) && intval($input[$key]) >= 0) {
+                    $new_input[$key] = intval($input[$key]);
+                }
+            } elseif ($key === SM_SETTING_BARRED) {
+                if (isset($input[$key])) {
+                    $new_input[$key] = sanitize_textarea_field($input[$key]);
+                }
+            } elseif ($key === SM_SETTING_ADMIN_EMAIL) {
+                if (isset($input[$key])) {
+                    $new_input[$key] = sanitize_text_field($input[$key]);
+                }
+            }
+        }
+
         return $new_input;
     }
 
@@ -105,7 +134,7 @@ class Admin
                 $args['label_for'],
                 $option['value'],
                 esc_html($option['label']),
-                $args['label_for'].'-'.$option['value'],
+                $args['label_for'] . '-' . $option['value'],
                 $checked
             );
         }
@@ -118,7 +147,7 @@ class Admin
         wp_dropdown_pages([
             'name' => $args['label_for'],
             'echo' => 1,
-            'show_option_none' => __( '&mdash; select &mdash;', SMLD),
+            'show_option_none' => __('&mdash; select &mdash;', SMLD),
             'option_none_value' => 0,
             'selected' => $this->options[$$args['label_for']]
         ]);
