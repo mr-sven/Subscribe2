@@ -42,7 +42,7 @@ class Admin
 
     public function options_page()
     {
-        add_settings_section('smini_settings', __('Settings', SMLD), null, 'smini_options');
+        add_settings_section('smini_settings', '', null, 'smini_options');
         add_settings_field(
             'admin_email',
             __('Send Admins notifications for new', SMLD),
@@ -72,6 +72,7 @@ class Admin
                 ]
             ]
         );
+        add_settings_field('sub_page', __('Set default Subscribe2 page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'sub_page', 'class' => 'sub_page']);
 
         require_once __DIR__ . '/../pages/options.php';
     }
@@ -94,17 +95,28 @@ class Admin
 
         foreach ($args['options'] as $option) {
             $checked = checked($this->options[$args['label_for']], $option['value'], false);
-
             printf(
-                '<input type="radio" name="%1$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>',
+                '<input type="radio" name="%1$s" id="%4$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>&nbsp;',
                 $args['label_for'],
                 $option['value'],
                 $option['label'],
-                $args['label_for'],
+                $args['label_for'].'-'.$option['value'],
                 $checked
             );
         }
 
         echo '</fieldset>';
     }
+
+    public function create_page_dropdown($args)
+    {
+        wp_dropdown_pages([
+            'name' => $args['label_for'],
+            'echo' => 1,
+            'show_option_none' => __( '&mdash; select &mdash;', SMLD),
+            'option_none_value' => 0,
+            'selected' => $this->options[$$args['label_for']]
+        ]);
+    }
+
 }
