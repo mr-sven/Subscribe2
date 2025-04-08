@@ -34,7 +34,12 @@ class Admin
 
     public function admin_init()
     {
-        $this->options = get_option(SMOPTIONS);
+        $this->options = get_option(SMOPTIONS, [
+            SM_SETTING_ADMIN_EMAIL => 'subs',
+            SM_SETTING_SUB_PAGE => 0,
+            SM_SETTING_UNSUB_PAGE => 0,
+            SM_SETTING_BARRED => ''
+        ]);
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
@@ -141,7 +146,7 @@ class Admin
                 $new_input[$key] = $this->options[$key];
             }
 
-            if (in_array($key, array(SM_SETTING_SUB_PAGE, SM_SETTING_UNSUB_PAGE), true)) {
+            if (in_array($key, [SM_SETTING_SUB_PAGE, SM_SETTING_UNSUB_PAGE], true)) {
                 // Numerical inputs fixed for old option names.
                 if (is_numeric($input[$key]) && intval($input[$key]) >= 0) {
                     $new_input[$key] = intval($input[$key]);
