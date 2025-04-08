@@ -51,6 +51,7 @@ class SubscribersTable extends \WP_List_Table
             }
 
             wp_redirect(admin_url('admin.php?page=smini_subscribers'));
+            exit();
         }
     }
 
