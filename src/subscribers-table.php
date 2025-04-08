@@ -20,6 +20,14 @@ class SubscribersTable extends \WP_List_Table
         return $wpdb->get_results("SELECT * FROM $wpdb->smini", ARRAY_A);
     }
 
+    public function get_views() {
+        return [
+            "all"        => __("<a href='#'>All</a>", SMLD),
+            "active"     => __("<a href='#'>Active</a>", SMLD),
+            "not_active" => __("<a href='#'>Not active</a>", SMLD)
+        ];
+    }
+
     // Define table columns
     public function get_columns()
     {
