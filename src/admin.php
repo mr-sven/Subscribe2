@@ -49,7 +49,7 @@ class Admin
 
     public function subscribers_page()
     {
-        require_once __DIR__ . 'subscribers-table.php';
+        require_once __DIR__ . '/subscribers-table.php';
         require_once __DIR__ . '/../pages/subscribers.php';
     }
 
