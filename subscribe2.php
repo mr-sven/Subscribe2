@@ -31,27 +31,6 @@ You should have received a copy of the GNU General Public License
 along with Subscribe2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-if ( version_compare( $GLOBALS['wp_version'], '4.4', '<' ) || ! function_exists( 'add_action' ) ) {
-	if ( ! function_exists( 'add_action' ) ) {
-		$exit_msg = __( "I'm just a plugin, please don't call me directly", 'subscribe2' );
-	} else {
-		/* translators: Placeholders: 1) - Subscribe2 needs WordPress 4.4 or above, 2) exit if not on a compatible version */
-		$exit_msg = sprintf( __( 'This version of Subscribe2 requires WordPress 4.4 or greater. Please update %1$s or use an older version of %2$s.', 'subscribe2' ), '<a href="http://codex.wordpress.org/Updating_WordPress">WordPress</a>', '<a href="https://subscribe2.wordpress.com/subscribe2-html/">Subscribe2</a>' );
-	}
-
-	exit( esc_html( $exit_msg ) );
-}
-
-// Stop Subscribe2 being activated site wide on Multisite installs.
-if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-	require_once ABSPATH . '/wp-admin/includes/plugin.php';
-}
-
-if ( is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
-	deactivate_plugins( plugin_basename( __FILE__ ) );
-	$exit_msg = __( 'Subscribe2 HTML cannot be activated as a network plugin. Please activate it on a site level', 'subscribe2' );
-	exit( esc_html( $exit_msg ) );
-}
 
 // Our version number. Don't touch this or any line below.
 // Unless you know exactly what you are doing.
@@ -64,6 +43,28 @@ define( 'S2URL', plugin_dir_url( dirname( __FILE__ ) ) . S2DIR );
 // Set maximum execution time to 5 minutes.
 if ( function_exists( 'set_time_limit' ) ) {
 	set_time_limit( 300 );
+}
+
+// define language domain
+define('SMLD', 'subscribe2');
+define('SMOPTIONS', 'smini_options');
+
+require_once __DIR__ . "/src/setup.php";
+
+// is admin panel
+if (is_admin())
+{
+	require_once __DIR__ . "/src/admin.php";
+
+	// register activation and deactivation hooks
+	register_activation_hook(__FILE__, [SMini\Setup::class, 'activate']);
+	register_deactivation_hook(__FILE__, [SMini\Setup::class, 'deactivate']);
+
+	new SMini\Admin();
+}
+else
+{
+
 }
 
 
@@ -80,4 +81,3 @@ if ( is_admin() ) {
 }
 
 add_action( 'plugins_loaded', array( $mysubscribe2, 's2init' ) );
-

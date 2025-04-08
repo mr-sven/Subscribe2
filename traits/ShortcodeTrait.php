@@ -41,18 +41,6 @@ trait Shortcode {
 	    /* translators: Placeholders: %s - link to Profile page */
 	    $this->profile = '<p class="s2_message">' . sprintf( __( 'You may manage your subscription options from your <a href="%1$s">profile</a>.', 'subscribe2' ), $profile ) . '</p>';
 
-        if ( $this->s2_mu ) {
-            global $blog_id;
-
-            $user_ID = get_current_user_id();
-            if ( ! is_user_member_of_blog( $user_ID, $blog_id ) ) {
-	            // If we are on multisite and the user is not a member of this blog change the link.
-	            $mu_profile = apply_filters( 's2_mu_profile_link', get_option( 'siteurl' ) . '/wp-admin/?s2mu_subscribe=' . $blog_id );
-	            /* translators: Placeholders: %s - link to profile page */
-	            $this->profile = '<p class="s2_message">' . sprintf( __( '<a href="%1$s">Subscribe</a> to email notifications when this blog posts new content.', 'subscribe2' ), $mu_profile ) . '</p>';
-            }
-        }
-
         $this->confirmation_sent = '<p class="s2_message">' . __( 'A confirmation message is on its way!', 'subscribe2' ) . '</p>';
 
         $this->already_subscribed = '<p class="s2_error">' . __( 'That email address is already subscribed.', 'subscribe2' ) . '</p>';

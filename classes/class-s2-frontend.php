@@ -293,30 +293,6 @@ class S2_Frontend extends S2_Core {
 	}
 
 	/**
-	 * Enqueue javascript ip updater code.
-	 *
-	 * @return void
-	 */
-	public function js_ip_script() {
-		wp_register_script( 's2_ip_updater', S2URL . 'include/s2-ip-updater' . $this->script_debug . '.js', array(), '1.1', true );
-		wp_enqueue_script( 's2_ip_updater' );
-	}
-
-	/**
-	 * Add ip updater library to footer.
-	 *
-	 * @return void
-	 */
-	public function js_ip_library_script() {
-		$args = array(
-			'format'   => 'jsonp',
-			'callback' => 'getip',
-		);
-
-		wp_enqueue_script( 's2_ip_library', add_query_arg( $args, 'https://api.ipify.org' ), array(), S2VERSION, true );
-	}
-
-	/**
 	 * Reformat WordPress escaped link to IPify library.
 	 *
 	 * @param string $tag

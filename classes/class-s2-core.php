@@ -26,13 +26,6 @@ class S2_Core {
     /**
      * State variable for affect processing.
      *
-     * @var bool
-     */
-    public $s2_mu = false;
-
-    /**
-     * State variable for affect processing.
-     *
      * @var int
      */
     public $filtered = 0;
@@ -483,13 +476,6 @@ class S2_Core {
     public function publish( $post, $preview = '' ) {
         if ( ! $post ) {
             return $post;
-        }
-
-        if ( $this->s2_mu && ! apply_filters( 's2_allow_site_switching', $this->site_switching ) ) {
-            global $switched;
-            if ( $switched ) {
-                return;
-            }
         }
 
         if ( empty( $preview ) ) {
@@ -1159,40 +1145,21 @@ class S2_Core {
         static $all_registered_email    = '';
         static $all_registered_email_id = '';
 
-        if ( $this->s2_mu ) {
-            if ( 'ID' === $return ) {
-                if ( '' === $all_registered_id ) {
-                    $all_registered_id = $wpdb->get_col( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key='{$wpdb->prefix}capabilities'" );
-                }
-                return $all_registered_id;
-            } elseif ( 'emailid' === $return ) {
-                if ( '' === $all_registered_email_id ) {
-                    $all_registered_email_id = $wpdb->get_results( "SELECT a.user_email, a.ID FROM $wpdb->users AS a INNER JOIN $wpdb->usermeta AS b on a.ID = b.user_id WHERE b.meta_key ='{$wpdb->prefix}capabilities'", ARRAY_A );
-                }
-                return $all_registered_email_id;
-            } else {
-                if ( '' === $all_registered_email ) {
-                    $all_registered_email = $wpdb->get_col( "SELECT a.user_email FROM $wpdb->users AS a INNER JOIN $wpdb->usermeta AS b ON a.ID = b.user_id WHERE b.meta_key='{$wpdb->prefix}capabilities'" );
-                }
-                return $all_registered_email;
+        if ( 'ID' === $return ) {
+            if ( '' === $all_registered_id ) {
+                $all_registered_id = $wpdb->get_col( "SELECT ID FROM $wpdb->users" );
             }
+            return $all_registered_id;
+        } elseif ( 'emailid' === $return ) {
+            if ( '' === $all_registered_email_id ) {
+                $all_registered_email_id = $wpdb->get_results( "SELECT user_email, ID FROM $wpdb->users", ARRAY_A );
+            }
+            return $all_registered_email_id;
         } else {
-            if ( 'ID' === $return ) {
-                if ( '' === $all_registered_id ) {
-                    $all_registered_id = $wpdb->get_col( "SELECT ID FROM $wpdb->users" );
-                }
-                return $all_registered_id;
-            } elseif ( 'emailid' === $return ) {
-                if ( '' === $all_registered_email_id ) {
-                    $all_registered_email_id = $wpdb->get_results( "SELECT user_email, ID FROM $wpdb->users", ARRAY_A );
-                }
-                return $all_registered_email_id;
-            } else {
-                if ( '' === $all_registered_email ) {
-                    $all_registered_email = $wpdb->get_col( "SELECT user_email FROM $wpdb->users" );
-                }
-                return $all_registered_email;
+            if ( '' === $all_registered_email ) {
+                $all_registered_email = $wpdb->get_col( "SELECT user_email FROM $wpdb->users" );
             }
+            return $all_registered_email;
         }
     }
 
@@ -1259,21 +1226,12 @@ class S2_Core {
             $and  .= $wpdb->prepare( ' AND (d.meta_key=%s AND NOT FIND_IN_SET(%s, d.meta_value))', $this->get_usermeta_keyname( 's2_authors' ), $r['author'] );
         }
 
-        if ( $this->s2_mu ) {
-            $result = $wpdb->get_col(
-                $wpdb->prepare(
-                    "SELECT a.user_id FROM $wpdb->usermeta AS a INNER JOIN $wpdb->usermeta AS e ON a.user_id = e.user_id " . $join . "WHERE a.meta_key='{$wpdb->prefix}capabilities' AND e.meta_key=%s AND e.meta_value <> ''" . $and, // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-                    $this->get_usermeta_keyname( 's2_subscribed' )
-                )
-            );
-        } else {
-            $result = $wpdb->get_col(
-                $wpdb->prepare(
-                    "SELECT a.user_id FROM $wpdb->usermeta AS a " . $join . "WHERE a.meta_key=%s AND a.meta_value <> ''" . $and, // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
-                    $this->get_usermeta_keyname( 's2_subscribed' )
-                )
-            );
-        }
+        $result = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT a.user_id FROM $wpdb->usermeta AS a " . $join . "WHERE a.meta_key=%s AND a.meta_value <> ''" . $and, // phpcs:ignore WordPress.DB.PreparedSQL, WordPress.DB.PreparedSQLPlaceholders
+                $this->get_usermeta_keyname( 's2_subscribed' )
+            )
+        );
 
         if ( empty( $result ) ) {
             return array();
@@ -1342,58 +1300,6 @@ class S2_Core {
             return $user_ID;
         }
 
-        $user = get_userdata( $user_ID );
-
-        // Subscribe registered users to categories obeying excluded categories.
-        if ( 0 === $this->subscribe2_options['reg_override'] || 'no' === $this->subscribe2_options['newreg_override'] ) {
-            $all_cats = $this->all_cats( true, 'ID' );
-        } else {
-            $all_cats = $this->all_cats( false, 'ID' );
-        }
-
-        $cats = '';
-        foreach ( $all_cats as $cat ) {
-            $cats .= empty( $cats ) ? $cat->term_id : ",$cat->term_id";
-        }
-
-        if ( empty( $cats ) ) {
-            // Sanity check, might occur if all cats excluded and reg_override = 0.
-            return $user_ID;
-        }
-
-        // Has this user previously signed up for email notification?
-        if ( false !== $this->is_public( sanitize_email( $user->user_email ) ) ) {
-            // Delete this user from the public table, and subscribe them to all the categories.
-            $this->delete( $user->user_email );
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_subscribed' ), $cats );
-
-            foreach ( explode( ',', $cats ) as $cat ) {
-                update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_cat' ) . $cat, $cat );
-            }
-
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_format' ), 'excerpt' );
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_autosub' ), $this->subscribe2_options['autosub_def'] );
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_authors' ), '' );
-        } else {
-            // Create post format entries for all users.
-            if ( in_array( $this->subscribe2_options['autoformat'], array( 'html', 'html_excerpt', 'post', 'excerpt' ), true ) ) {
-                update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_format' ), $this->subscribe2_options['autoformat'] );
-            } else {
-                update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_format' ), 'excerpt' );
-            }
-
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_autosub' ), $this->subscribe2_options['autosub_def'] );
-
-            // If there are no existing subscriptions, create them if we have consent.
-            if ( true === $consent ) {
-                update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_subscribed' ), $cats );
-                foreach ( explode( ',', $cats ) as $cat ) {
-                    update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_cat' ) . $cat, $cat );
-                }
-            }
-
-            update_user_meta( $user_ID, $this->get_usermeta_keyname( 's2_authors' ), '' );
-        }
 
         return $user_ID;
     }
@@ -1533,180 +1439,10 @@ class S2_Core {
      */
     public function get_usermeta_keyname( $metaname ) {
         global $wpdb;
-
-        // Is this WordPressMU or not?
-        if ( true === $this->s2_mu ) {
-            switch ( $metaname ) {
-                case 's2_subscribed':
-                case 's2_cat':
-                case 's2_format':
-                case 's2_autosub':
-                case 's2_authors':
-                    return $wpdb->prefix . $metaname;
-                default:
-                    break;
-            }
-        }
-
         // Not MU or not a prefixed option name.
         return $metaname;
     }
 
-    /**
-     * Adds information to the WordPress registration screen for new users.
-     *
-     * @return void
-     */
-    public function register_form() {
-        if ( 'no' === $this->subscribe2_options['autosub'] ) {
-            return;
-        }
-
-        if ( 'wpreg' === $this->subscribe2_options['autosub'] ) {
-            echo '<p><label>';
-            echo esc_html__( 'Check here to Subscribe to email notifications for new posts', 'subscribe2' ) . ':<br>' . "\r\n";
-            echo '<input type="checkbox" name="reg_subscribe"' . checked( $this->subscribe2_options['wpregdef'], 'yes', false ) . ' />';
-            echo '</label></p>' . "\r\n";
-        } elseif ( 'yes' === $this->subscribe2_options['autosub'] ) {
-            echo '<p><center>' . "\r\n";
-            echo esc_html__( 'By registering with this blog you are also agreeing to receive email notifications for new posts but you can unsubscribe at anytime', 'subscribe2' ) . '.<br>' . "\r\n";
-            echo '</center></p>' . "\r\n";
-        }
-    }
-
-    /**
-     * Process function to add action if user selects to subscribe to posts during registration.
-     *
-     * @param int $user_ID
-     *
-     * @return void
-     */
-    public function register_post( $user_ID = 0 ) {
-        global $_POST;
-
-        if ( 0 === $user_ID ) {
-            return;
-        }
-
-        if (
-            'yes' === $this->subscribe2_options['autosub'] ||
-            ( isset( $_POST['reg_subscribe'] ) && 'on' === sanitize_key( $_POST['reg_subscribe'] ) && 'wpreg' === $this->subscribe2_options['autosub'] )
-        ) {
-            $this->register( $user_ID, true );
-        } else {
-            $this->register( $user_ID, false );
-        }
-    }
-
-    /**
-     * Display check box on comment page.
-     *
-     * @param string $submit_field
-     *
-     * @return string
-     */
-    public function s2_comment_meta_form( $submit_field ) {
-        if ( is_user_logged_in() ) {
-            $comment_meta_form = $this->profile;
-        } else {
-            $comment_meta_form = '<p style="width: auto;"><label><input type="checkbox" name="s2_comment_request" value="1" ' . checked( $this->subscribe2_options['comment_def'], 'yes', false ) . '/> ' . __( 'Check here to Subscribe to notifications for new posts', 'subscribe2' ) . '</label></p>';
-        }
-
-        return ( 'before' === $this->subscribe2_options['comment_subs'] ) ? $comment_meta_form . $submit_field : $submit_field . '<br>' . $comment_meta_form;;
-    }
-
-    /**
-     * Process comment meta data.
-     *
-     * @param int $comment_id
-     * @param int $approved
-     *
-     * @return void
-     */
-    public function s2_comment_meta( $comment_id, $approved = 0 ) {
-        // Return if email is empty - can happen if setting to require name and email for comments is disabled.
-        if ( isset( $_POST['email'] ) && empty( $_POST['email'] ) ) {
-            return;
-        }
-
-        if ( isset( $_POST['s2_comment_request'] ) && '1' === sanitize_key( $_POST['s2_comment_request'] ) ) {
-            switch ( $approved ) {
-                case '0':
-                    // Unapproved so hold in meta data pending moderation.
-                    add_comment_meta( $comment_id, 's2_comment_request', sanitize_key( $_POST['s2_comment_request'] ) );
-                    break;
-                case '1':
-                    // Approved so add.
-                    $comment   = get_comment( $comment_id );
-                    $is_public = $this->is_public( $comment->comment_author_email );
-                    if ( 0 === $is_public ) {
-                        $this->toggle( $comment->comment_author_email );
-                    }
-
-                    $is_registered = $this->is_registered( $comment->comment_author_email );
-                    if ( ! $is_public && ! $is_registered ) {
-                        $this->add( $comment->comment_author_email, true );
-                    }
-
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Action subscribe requests made on comment forms when comments are approved.
-     *
-     * @param int $comment_id
-     *
-     * @return int|mixed
-     */
-    public function comment_status( $comment_id = 0 ) {
-        global $wpdb;
-
-        // Get meta data.
-        $subscribe = get_comment_meta( $comment_id, 's2_comment_request', true );
-        if ( '1' !== $subscribe ) {
-            return $comment_id;
-        }
-
-        // Retrieve the information about the comment.
-        $comment = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT comment_author_email, comment_approved FROM $wpdb->comments WHERE comment_ID=%s LIMIT 1",
-                $comment_id
-            ),
-            OBJECT
-        );
-
-        if ( empty( $comment ) ) {
-            return $comment_id;
-        }
-
-        switch ( $comment->comment_approved ) {
-            case '0': // Unapproved.
-                break;
-            case '1': // Approved.
-                $is_public = $this->is_public( $comment->comment_author_email );
-                if ( 0 === $is_public ) {
-                    $this->toggle( $comment->comment_author_email );
-                }
-
-                $is_registered = $this->is_registered( $comment->comment_author_email );
-                if ( ! $is_public && ! $is_registered ) {
-                    $this->add( $comment->comment_author_email, true );
-                }
-
-                delete_comment_meta( $comment_id, 's2_comment_request' );
-                break;
-            default: // Post is trash, spam or deleted.
-                delete_comment_meta( $comment_id, 's2_comment_request' );
-                break;
-        }
-
-        return $comment_id;
-    }
 
     /**
      * Register the form widget.
@@ -1748,19 +1484,7 @@ class S2_Core {
         }
     }
 
-    /**
-     * Jetpack comments doesn't play nice, this function kills that module.
-     *
-     * @param array $modules
-     *
-     * @return mixed
-     */
-    public function s2_hide_jetpack_comments( $modules ) {
-        unset( $modules['comments'] );
-        return $modules;
-    }
-
-    /**
+     /**
      * Subscribe2 constructor.
      *
      * @return void
@@ -1794,27 +1518,6 @@ class S2_Core {
         $tmp              = explode( '-', $wp_version, 2 );
         $this->wp_release = $tmp[0];
 
-        // Is this WordPressMU or not?
-        if ( isset( $wpmu_version ) || strpos( $wp_version, 'wordpress-mu' ) ) {
-            $this->s2_mu = true;
-        }
-
-        if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-            $this->s2_mu = true;
-        }
-
-        // Add action to handle WPMU subscriptions and unsubscriptions.
-        if ( true === $this->s2_mu ) {
-            require_once S2PATH . 'classes/class-s2-multisite.php';
-
-            global $s2class_multisite;
-
-            $s2class_multisite = new S2_Multisite();
-            if ( isset( $_GET['s2mu_subscribe'] ) || isset( $_GET['s2mu_unsubscribe'] ) ) {
-                add_action( 'init', array( $s2class_multisite, 'wpmu_subscribe' ) );
-            }
-        }
-
         // Load our translations.
         add_action( 'init', array( $this, 'load_translations' ) );
 
@@ -1823,40 +1526,6 @@ class S2_Core {
         if ( ! isset( $wpdb->subscribe2 ) ) {
             $wpdb->subscribe2 = $s2_table;
             $wpdb->tables[]   = 'subscribe2';
-        }
-
-        // Do we need to install anything?
-        if ( is_admin() && current_user_can( 'manage_options' ) ) {
-            if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->subscribe2 ) ) !== $wpdb->subscribe2 ) {
-                require_once S2PATH . 'classes/class-s2-upgrade.php';
-
-                global $s2_upgrade;
-
-                $s2_upgrade = new S2_Upgrade();
-                $s2_upgrade->install();
-            }
-        }
-
-        // Do we need to upgrade anything?
-        if ( false === $this->subscribe2_options || is_array( $this->subscribe2_options ) && S2VERSION !== $this->subscribe2_options['version'] ) {
-            global $s2_upgrade;
-
-            if ( ! is_a( $s2_upgrade, 'S2_Upgrade' ) ) {
-                require_once S2PATH . 'classes/class-s2-upgrade.php';
-                $s2_upgrade = new S2_Upgrade();
-            }
-
-            add_action( 'shutdown', array( $s2_upgrade, 'upgrade' ) );
-        }
-
-        // Add actions for automatic subscription based on option settings.
-        if ( $this->s2_mu ) {
-            add_action( 'wpmu_activate_user', array( $s2class_multisite, 'wpmu_add_user' ) );
-            add_action( 'add_user_to_blog', array( $s2class_multisite, 'wpmu_add_user' ), 10 );
-            add_action( 'remove_user_from_blog', array( $s2class_multisite, 'wpmu_remove_user' ), 10 );
-        } else {
-            add_action( 'register_form', array( $this, 'register_form' ) );
-            add_action( 'user_register', array( $this, 'register_post' ) );
         }
 
         // Add actions for processing posts based on per-post or cron email settings.
@@ -1872,14 +1541,6 @@ class S2_Core {
             add_action( "{$status}_to_publish", array( $this, 'publish' ) );
         }
 
-        // Add actions for comment subscribers.
-        if ( 'no' !== $this->subscribe2_options['comment_subs'] ) {
-            add_filter( 'jetpack_get_available_modules', array( $this, 's2_hide_jetpack_comments' ) );
-            add_filter( 'comment_form_submit_field', array( $this, 's2_comment_meta_form' ) );
-            add_action( 'comment_post', array( $this, 's2_comment_meta' ), 1, 2 );
-            add_action( 'wp_set_comment_status', array( $this, 'comment_status' ) );
-        }
-
         // Add action to display widget if option is enabled.
         if ( '1' === $this->subscribe2_options['widget'] ) {
             add_action( 'widgets_init', array( $this, 'subscribe2_widget' ) );
@@ -1888,14 +1549,6 @@ class S2_Core {
         // Add action to 'clean' unconfirmed Public Subscribers.
         if ( is_int( $this->clean_interval ) && $this->clean_interval > 0 ) {
             add_action( 'wp_scheduled_delete', array( $this, 's2cleaner_task' ) );
-        }
-
-        // Add ajax class if enabled.
-        if ( '1' === $this->subscribe2_options['ajax'] ) {
-            require_once S2PATH . 'classes/class-s2-ajax.php';
-            global $mysubscribe2_ajax;
-
-            $mysubscribe2_ajax = new S2_Ajax();
         }
 
         // Check if Block Editor is in use.
@@ -1927,28 +1580,10 @@ class S2_Core {
             add_action( 'save_post', array( $this, 's2_meta_handler' ) );
             add_action( 'save_post', array( $this, 's2_preview_handler' ) );
             add_action( 'save_post', array( $this, 's2_resend_handler' ) );
-            add_action( 'create_category', array( $this, 'new_category' ) );
-            add_action( 'delete_category', array( $this, 'delete_category' ) );
-
-            // Add filters for Ozh Admin Menu.
-            if ( function_exists( 'wp_ozh_adminmenu' ) ) {
-                add_filter( 'ozh_adminmenu_icon_s2', array( $this, 'ozh_s2_icon' ) );
-                add_filter( 'ozh_adminmenu_icon_s2_posts', array( $this, 'ozh_s2_icon' ) );
-                add_filter( 'ozh_adminmenu_icon_s2_tools', array( $this, 'ozh_s2_icon' ) );
-                add_filter( 'ozh_adminmenu_icon_s2_settings', array( $this, 'ozh_s2_icon' ) );
-            }
 
             // Add write button.
             if ( '1' === $this->subscribe2_options['show_button'] && false === $this->block_editor ) {
                 add_action( 'admin_init', array( $this, 'button_init' ) );
-            }
-
-            // Add one-click handlers.
-            if ( 'yes' === $this->subscribe2_options['one_click_profile'] ) {
-                add_action( 'show_user_profile', array( $this, 'one_click_profile_form' ) );
-                add_action( 'edit_user_profile', array( $this, 'one_click_profile_form' ) );
-                add_action( 'personal_options_update', array( $this, 'one_click_profile_form_save' ) );
-                add_action( 'edit_user_profile_update', array( $this, 'one_click_profile_form_save' ) );
             }
 
             // Add handler to dismiss sender error notice.
@@ -1956,9 +1591,6 @@ class S2_Core {
 
             // Subscriber page options handler
             add_filter( 'set-screen-option', array( $this, 'subscribers_set_screen_option' ), 10, 3 );
-
-            // Register uninstall functions.
-            register_uninstall_hook( S2PLUGIN, array( 'S2_Admin', 's2_uninstall' ) );
 
             // Capture CSV export.
             if ( isset( $_POST['s2_admin'] ) && isset( $_POST['csv'] ) ) {
@@ -1989,12 +1621,6 @@ class S2_Core {
             // Add actions for other plugins.
             if ( '1' === $this->subscribe2_options['show_meta'] ) {
                 add_action( 'wp_meta', array( $this, 'add_minimeta' ), 0 );
-            }
-
-            // Add action for adding javascript IP updating code.
-            if ( '1' === $this->subscribe2_options['js_ip_updater'] ) {
-                add_action( 'wp_enqueue_scripts', array( $this, 'js_ip_script' ), 10 );
-                add_action( 'wp_footer', array( $this, 'js_ip_library_script' ), 20 );
             }
         }
 

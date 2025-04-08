@@ -6,7 +6,17 @@ if (isset($_POST['s2_admin'])) {
         die('<p>' . esc_html__('Security error! Your request cannot be completed.', 'subscribe2') . '</p>');
     }
 
-    if (isset($_POST['submit'])) {
+    if (isset($_POST['preview'])) {
+        global $user_email, $post;
+
+        $this->preview_email = true;
+        $preview_posts = get_posts('numberposts=1');
+        $preview_post  = $preview_posts[0];
+
+        $this->publish($preview_post, $user_email);
+
+        echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', 'subscribe2') . '</strong></p></div>';
+    } elseif (isset($_POST['submit'])) {
         foreach ($_POST as $key => $value) {
             if (in_array($key, ['notification_subject', 'mailtext', 'confirm_subject', 'confirm_email'], true) && ! empty($_POST[$key])) {
                 // Email subject and body templates.
@@ -14,8 +24,8 @@ if (isset($_POST['s2_admin'])) {
             }
         }
 
-		echo '<div id="message" class="updated fade"><p><strong>' . esc_html__( 'Options saved!', 'subscribe2' ) . '</strong></p></div>';
-		update_option( 'subscribe2_options', $this->subscribe2_options );
+        echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Options saved!', 'subscribe2') . '</strong></p></div>';
+        update_option('subscribe2_options', $this->subscribe2_options);
     }
 }
 ?>
