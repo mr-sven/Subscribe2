@@ -10,9 +10,13 @@ class SubscribersTable extends \WP_List_Table
     private $table_data;
 
     // Get table data
-    private function get_table_data()
+    private function get_table_data($search = '')
     {
         global $wpdb;
+        if (!empty($search)) {
+            $prepare = $wpdb->prepare("SELECT * from $wpdb->smini WHERE email Like %s", '%' . $search . '%');
+            return $wpdb->get_results($prepare, ARRAY_A);
+        }
         return $wpdb->get_results("SELECT * FROM $wpdb->smini", ARRAY_A);
     }
 
@@ -31,18 +35,21 @@ class SubscribersTable extends \WP_List_Table
     // Bind table with columns, data and all
     public function prepare_items()
     {
-        //data
-        $this->table_data = $this->get_table_data();
+        if (isset($_POST['s'])) {
+            $this->table_data = $this->get_table_data($_POST['s']);
+        } else {
+            $this->table_data = $this->get_table_data();
+        }
 
         $columns = $this->get_columns();
         $hidden = [];
         $sortable = $this->get_sortable_columns();
-        $primary  = 'email';
+        $primary = 'email';
         $this->_column_headers = [$columns, $hidden, $sortable, $primary];
         usort($this->table_data, [&$this, 'usort_reorder']);
 
         /* pagination */
-        $per_page = 3;
+        $per_page = $this->get_items_per_page('per_page', 20);
         $current_page = $this->get_pagenum();
         $total_items = count($this->table_data);
 
@@ -78,7 +85,7 @@ class SubscribersTable extends \WP_List_Table
     public function get_sortable_columns()
     {
         return [
-            'email'  => ['email', true],
+            'email'  => ['email', false],
             'active' => ['active', false]
         ];
     }

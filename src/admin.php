@@ -27,7 +27,8 @@ class Admin
     public function admin_menu()
     {
         add_menu_page(__('Subscribe Mini', SMLD), __('Subscribe Mini', SMLD), apply_filters('smin_capability', 'read', 'user'), 'smini_subscribers', null, 'dashicons-buddicons-pm', 30);
-        add_submenu_page('smini_subscribers', __('Subscribers', SMLD), __('Subscribers', SMLD), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
+        $subscribers_page = add_submenu_page('smini_subscribers', __('Subscribers', SMLD), __('Subscribers', SMLD), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
+        add_action("load-" . $subscribers_page, [$this, 'subscribers_page_options']);
         add_submenu_page('smini_subscribers', __('Options', SMLD), __('Options', SMLD), apply_filters('smin_capability', 'manage_options', 'options'), static::OPTIONS_PAGE, array($this, 'options_page'));
         add_submenu_page('smini_subscribers', __('Templates', SMLD), __('Templates', SMLD), apply_filters('smin_capability', 'manage_options', 'templates'), 'smini_templates', array($this, 'templates_page'));
     }
@@ -45,6 +46,17 @@ class Admin
             SM_SETTING_CONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', SMLD)
         ]);
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
+    }
+
+    public function subscribers_page_options()
+    {
+        $args = array(
+            'label'   => __('Number of subscribers per page: ', SMLD),
+            'default' => 25,
+            'option'  => 'subscribers_per_page',
+        );
+
+        add_screen_option('per_page', $args);
     }
 
     public function subscribers_page()
