@@ -5,7 +5,7 @@
 	    <?php
 	        // This prints out all hidden setting fields
 	        settings_fields(SM_SETTINGS_GROUP);
-	        do_settings_sections('smini_options');
+	        do_settings_sections(static::OPTIONS_PAGE);
 	        submit_button();
 	    ?>
 	    </form>

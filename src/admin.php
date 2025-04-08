@@ -10,6 +10,8 @@ define('SM_SETTINGS_GROUP', 'smini_group');
 
 class Admin
 {
+    private const OPTIONS_PAGE = 'smini_options';
+    private const OPTIONS_SECTION = 'smini_settings';
     /**
      * @var array
      */
@@ -26,7 +28,7 @@ class Admin
     {
         add_menu_page(__('Subscribe Mini', SMLD), __('Subscribe Mini', SMLD), apply_filters('smin_capability', 'read', 'user'), 'smini_subscribers', null, 'dashicons-buddicons-pm', 30);
         add_submenu_page('smini_subscribers', __('Subscribers', SMLD), __('Subscribers', SMLD), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
-        add_submenu_page('smini_subscribers', __('Options', SMLD), __('Options', SMLD), apply_filters('smin_capability', 'manage_options', 'options'), 'smini_options', array($this, 'options_page'));
+        add_submenu_page('smini_subscribers', __('Options', SMLD), __('Options', SMLD), apply_filters('smin_capability', 'manage_options', 'options'), static::OPTIONS_PAGE, array($this, 'options_page'));
         add_submenu_page('smini_subscribers', __('Templates', SMLD), __('Templates', SMLD), apply_filters('smin_capability', 'manage_options', 'templates'), 'smini_templates', array($this, 'templates_page'));
     }
 
@@ -43,15 +45,16 @@ class Admin
 
     public function options_page()
     {
-        add_settings_section('smini_settings', '', null, 'smini_options');
+        add_settings_section(static::OPTIONS_SECTION, '', null, static::OPTIONS_PAGE);
         add_settings_field(
             SM_SETTING_ADMIN_EMAIL,
             __('Send Admins notifications for new', SMLD),
             [$this, 'create_radio'],
-            'smini_options',
-            'smini_settings',
+            static::OPTIONS_PAGE,
+            static::OPTIONS_SECTION,
             [
-                'label_for' => SM_SETTING_ADMIN_EMAIL,
+                'label_for' => SMOPTIONS . '[' . SM_SETTING_ADMIN_EMAIL . ']',
+                'key' => SM_SETTING_ADMIN_EMAIL,
                 'class' => SM_SETTING_ADMIN_EMAIL,
                 'options' => [
                     [
@@ -73,12 +76,46 @@ class Admin
                 ]
             ]
         );
-        add_settings_field(SM_SETTING_SUB_PAGE, __('Set default Subscribe Mini page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_SUB_PAGE, 'class' => SM_SETTING_SUB_PAGE]);
-        add_settings_field(SM_SETTING_UNSUB_PAGE, __('Set Subscribe Mini unsubscribe page', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_UNSUB_PAGE, 'class' => SM_SETTING_UNSUB_PAGE]);
-        add_settings_field(SM_SETTING_BARRED, __('Barred Domains', SMLD), [$this, 'create_textarea'], 'smini_options', 'smini_settings', ['label_for' => SM_SETTING_BARRED, 'class' => SM_SETTING_BARRED, 'hint' => [
-            __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', SMLD),
-            __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', SMLD)
-        ]]);
+        add_settings_field(
+            SM_SETTING_SUB_PAGE,
+            __('Set default Subscribe Mini page as', SMLD),
+            [$this, 'create_page_dropdown'],
+            static::OPTIONS_PAGE,
+            static::OPTIONS_SECTION,
+            [
+                'label_for' => SMOPTIONS . '[' . SM_SETTING_SUB_PAGE . ']',
+                'key' => SM_SETTING_SUB_PAGE,
+                'class' => SM_SETTING_SUB_PAGE
+            ]
+        );
+        add_settings_field(
+            SM_SETTING_UNSUB_PAGE,
+            __('Set Subscribe Mini unsubscribe page', SMLD),
+            [$this, 'create_page_dropdown'],
+            static::OPTIONS_PAGE,
+            static::OPTIONS_SECTION,
+            [
+                'label_for' => SMOPTIONS . '[' . SM_SETTING_UNSUB_PAGE . ']',
+                'key' => SM_SETTING_UNSUB_PAGE,
+                'class' => SM_SETTING_UNSUB_PAGE
+            ]
+        );
+        add_settings_field(
+            SM_SETTING_BARRED,
+            __('Barred Domains', SMLD),
+            [$this, 'create_textarea'],
+            static::OPTIONS_PAGE,
+            static::OPTIONS_SECTION,
+            [
+                'label_for' => SMOPTIONS . '[' . SM_SETTING_BARRED . ']',
+                'key' => SM_SETTING_BARRED,
+                'class' => SM_SETTING_BARRED,
+                'hint' => [
+                    __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', SMLD),
+                    __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', SMLD)
+                ]
+            ]
+        );
 
         require_once __DIR__ . '/../pages/options.php';
     }
@@ -128,14 +165,14 @@ class Admin
         echo '<fieldset>';
 
         foreach ($args['options'] as $option) {
-            $checked = checked($this->options[$args['label_for']], $option['value'], false);
+            $checked = checked($this->options[$args['key']], $option['value'], false);
             printf(
-                '<input type="radio" name="%1$s" id="%4$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>&nbsp;',
-                $args['label_for'],
-                $option['value'],
-                esc_html($option['label']),
-                $args['label_for'] . '-' . $option['value'],
-                $checked
+                '<input type="radio" name="%1$s" id="%2$s" value="%3$s" %4$s /><label for="%2$s">%5$s</label>&nbsp;',
+                $args['label_for'], // name
+                $args['key'] . '-' . $option['value'], // id
+                $option['value'], // value
+                $checked, // checked
+                esc_html($option['label']), // label
             );
         }
 
@@ -149,14 +186,14 @@ class Admin
             'echo' => 1,
             'show_option_none' => __('&mdash; select &mdash;', SMLD),
             'option_none_value' => 0,
-            'selected' => $this->options[$$args['label_for']]
+            'selected' => $this->options[$args['key']]
         ]);
     }
 
     public function create_textarea($args)
     {
         $textarea = '<textarea name="' . $args['label_for'] . '" id="' . $args['label_for'] . '" rows="4" cols="60" style="width: 98%;">';
-        $textarea .= esc_textarea($this->options[$args['label_for']]);
+        $textarea .= esc_textarea($this->options[$args['key']]);
         $textarea .= '</textarea>';
 
         if (isset($args['hint'])) {
