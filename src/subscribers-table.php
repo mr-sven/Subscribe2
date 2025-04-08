@@ -83,10 +83,10 @@ class SubscribersTable extends \WP_List_Table
     }
 
     // Adding action links to column
-    function column_email($item)
+    public function column_email($item)
     {
         $actions = [
-            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['ID'])
+            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'])
         ];
         return sprintf('%1$s %2$s', $item['email'], $this->row_actions($actions));
     }
@@ -96,6 +96,14 @@ class SubscribersTable extends \WP_List_Table
         return [
             'email'  => ['email', false],
             'active' => ['active', false]
+        ];
+    }
+
+    // To show bulk action dropdown
+    function get_bulk_actions()
+    {
+        return [
+            'delete_all' => __('Delete', SMLD),
         ];
     }
 
