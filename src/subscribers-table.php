@@ -38,7 +38,7 @@ class SubscribersTable extends \WP_List_Table
         $sortable = array();
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        $this->items = [];
+        $this->items = $this->table_data;
     }
 
     public function column_default($item, $column_name)
