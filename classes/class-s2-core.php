@@ -1560,6 +1560,9 @@ class S2_Core {
             $this->block_editor = true;
         }
 
+        if ( ! function_exists( 'is_plugin_active' ) ) {
+         require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+    }
         // Compatibility with Fusion Builder.
         if ( is_plugin_active( 'fusion-builder/fusion-builder.php' ) && ! isset( $_GET['gutenberg-editor'] ) ) {
             $this->block_editor = false;
