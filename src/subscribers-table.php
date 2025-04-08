@@ -49,6 +49,8 @@ class SubscribersTable extends \WP_List_Table
             if ($action == 'delete') {
                 //$wpdb->delete($wpdb->smini, ['id' => (int)$_GET['element']]);
             }
+
+            wp_redirect(admin_url('admin.php?page=smini_subscribers'));
         }
     }
 
