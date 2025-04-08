@@ -1,7 +1,7 @@
 <?php defined('ABSPATH') or die('NO!'); ?>
 	<div class="wrap">
 	    <h2><?=esc_html(get_admin_page_title())?></h2>
-	    <form method="post">
+	    <form method="post" action="options.php">
 	    <?php
 	        // This prints out all hidden setting fields
 	        settings_fields(SM_SETTINGS_GROUP);
