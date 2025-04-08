@@ -23,9 +23,10 @@ class SubscribersTable extends \WP_List_Table
 
     public function process_bulk_action()
     {
+        global $wpdb;
         $action = $this->current_action();
 
-        if (!in_array($action, ['delete_all'], true)) {
+        if (!in_array($action, ['delete_all', 'delete'], true)) {
             return;
         }
 
@@ -36,8 +37,10 @@ class SubscribersTable extends \WP_List_Table
         }
 
         switch ($action) {
-
             case 'delete_all':
+                foreach ($_REQUEST['element'] as $id) {
+                    $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
+                }
                 break;
 
             default:
@@ -149,8 +152,9 @@ class SubscribersTable extends \WP_List_Table
     // Adding action links to column
     public function column_email($item)
     {
+        $_wpnonce = esc_attr(wp_create_nonce("delete-".$this->_args['singular']));
         $actions = [
-            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'])
+            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s&_wpnonce=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'], $_wpnonce)
         ];
         return sprintf('%1$s %2$s', $item['email'], $this->row_actions($actions));
     }
