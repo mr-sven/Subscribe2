@@ -1,5 +1,4 @@
 <?php defined('ABSPATH') or die('NO!'); ?>
-<?php $table = new SMini\SubscribersTable(); ?>
 <div class="wrap">
     <h2><?= esc_html(get_admin_page_title()) ?></h2>
     <form method="post">
@@ -16,11 +15,11 @@
         </div>
         <div>
             <h2><?= esc_html__('Current Subscribers', SMLD) ?></h2>
-            <?php $table->views(); ?>
+            <?php $sminiTable->views(); ?>
             <?php
-                $table->prepare_items();
-                $table->search_box('search', 'search_id');
-                $table->display();
+                $sminiTable->prepare_items();
+                $sminiTable->search_box('search', 'search_id');
+                $sminiTable->display();
             ?>
         </div>
     </form>

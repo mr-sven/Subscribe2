@@ -50,6 +50,9 @@ class Admin
 
     public function subscribers_page_options()
     {
+        global $sminiTable;
+        $sminiTable = new SubscribersTable();
+
         $args = array(
             'label'   => __('Number of subscribers per page: ', SMLD),
             'default' => 25,
@@ -61,9 +64,6 @@ class Admin
 
     public function subscribers_page()
     {
-
-
-
         require_once __DIR__ . '/subscribers-table.php';
         require_once __DIR__ . '/../pages/subscribers.php';
     }
