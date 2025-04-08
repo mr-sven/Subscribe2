@@ -72,7 +72,12 @@ class Admin
                 ]
             ]
         );
-        add_settings_field('sub_page', __('Set default Subscribe2 page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'sub_page', 'class' => 'sub_page']);
+        add_settings_field('sub_page', __('Set default Subscribe Mini page as', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'sub_page', 'class' => 'sub_page']);
+        add_settings_field('unsub_page', __('Set Subscribe Mini unsubscribe page', SMLD), [$this, 'create_page_dropdown'], 'smini_options', 'smini_settings', ['label_for' => 'unsub_page', 'class' => 'unsub_page']);
+        add_settings_field('barred',__('Barred Domains', SMLD), [$this, 'create_textarea'], 'smini_options', 'smini_settings', ['label_for' => 'barred', 'class' => 'barred', 'hint' => [
+            __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', SMLD),
+            __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', SMLD)
+        ]]);
 
         require_once __DIR__ . '/../pages/options.php';
     }
@@ -99,7 +104,7 @@ class Admin
                 '<input type="radio" name="%1$s" id="%4$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>&nbsp;',
                 $args['label_for'],
                 $option['value'],
-                $option['label'],
+                esc_html($option['label']),
                 $args['label_for'].'-'.$option['value'],
                 $checked
             );
@@ -119,4 +124,18 @@ class Admin
         ]);
     }
 
+    public function create_textarea($args)
+    {
+        $textarea = '<textarea name="' . $args['label_for'] . '" id="' . $args['label_for'] . '" rows="4" cols="60" style="width: 98%;">';
+        $textarea .= esc_textarea($this->options[$args['label_for']]);
+        $textarea .= '</textarea>';
+
+        if (isset($args['hint'])) {
+            foreach ($args['hint'] as $hint) {
+                $textarea .= '<p class="description">' . esc_html($hint) . '</p>';
+            }
+        }
+
+        echo $textarea;
+    }
 }
