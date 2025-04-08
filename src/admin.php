@@ -42,12 +42,13 @@ class Admin
 
     public function options_page()
     {
+        add_settings_section('smini_settings', __('Settings', SMLD), null, 'smini_options');
         add_settings_field(
             'admin_email',
             __('Send Admins notifications for new', SMLD),
             [$this, 'create_radio'],
             'smini_options',
-            'default',
+            'smini_settings',
             [
                 'label_for' => 'admin_email',
                 'class' => 'admin_email',
@@ -78,6 +79,13 @@ class Admin
     public function templates_page()
     {
         //require_once S2PATH . 'admin/templates.php';
+    }
+
+    public function check_values($input)
+    {
+        $new_input = [];
+
+        return $new_input;
     }
 
     public function create_radio($args)
