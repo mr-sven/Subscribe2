@@ -82,6 +82,15 @@ class SubscribersTable extends \WP_List_Table
         return sprintf('<input type="checkbox" name="element[]" value="%s" />', $item['id']);
     }
 
+    // Adding action links to column
+    function column_email($item)
+    {
+        $actions = [
+            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['ID'])
+        ];
+        return sprintf('%1$s %2$s', $item['name'], $this->row_actions($actions));
+    }
+
     public function get_sortable_columns()
     {
         return [
