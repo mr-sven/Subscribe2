@@ -10,14 +10,28 @@ class SubscribersTable extends \WP_List_Table
     private $table_data;
 
     // Get table data
-    private function get_table_data($search = '')
+    private function get_table_data($filter = 'all', $search = '')
     {
         global $wpdb;
-        if (!empty($search)) {
-            $prepare = $wpdb->prepare("SELECT * from $wpdb->smini WHERE email Like %s", '%' . $search . '%');
-            return $wpdb->get_results($prepare, ARRAY_A);
+
+        $filter = in_array($filter, ['all', 'active', 'not_active']) ? $filter : 'all';
+
+        if ($filter == 'all') {
+            if (!empty($search)) {
+                $prepare = $wpdb->prepare("SELECT * from $wpdb->smini WHERE email Like %s", '%' . $search . '%');
+            } else {
+                $prepare = $wpdb->prepare("SELECT * from $wpdb->smini");
+            }
+        } else {
+            $active = ($filter == 'active') ? 1 : 0;
+            if (!empty($search)) {
+                $prepare = $wpdb->prepare("SELECT * from $wpdb->smini WHERE email Like %s AND active = %d", '%' . $search . '%', $active);
+            } else {
+                $prepare = $wpdb->prepare("SELECT * from $wpdb->smini WHERE active = %d", $active);
+            }
         }
-        return $wpdb->get_results("SELECT * FROM $wpdb->smini", ARRAY_A);
+
+        return $wpdb->get_results($prepare, ARRAY_A);
     }
 
     public function get_views()
@@ -45,10 +59,12 @@ class SubscribersTable extends \WP_List_Table
     // Bind table with columns, data and all
     public function prepare_items()
     {
+        $filter = (isset($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
+
         if (isset($_POST['s'])) {
-            $this->table_data = $this->get_table_data($_POST['s']);
+            $this->table_data = $this->get_table_data($filter, $_POST['s']);
         } else {
-            $this->table_data = $this->get_table_data();
+            $this->table_data = $this->get_table_data($filter);
         }
 
         $columns = $this->get_columns();
