@@ -20,11 +20,13 @@ class SubscribersTable extends \WP_List_Table
         return $wpdb->get_results("SELECT * FROM $wpdb->smini", ARRAY_A);
     }
 
-    public function get_views() {
+    public function get_views()
+    {
+        $current = (!empty($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
         return [
-            "all"        => __("<a href='#'>All</a>", SMLD),
-            "active"     => __("<a href='#'>Active</a>", SMLD),
-            "not_active" => __("<a href='#'>Not active</a>", SMLD)
+            "all"        => '<a href="' . remove_query_arg('filter') . '" ' . ($current == 'all' ? ' class="current"' : '') . '>' . esc_html__("All", SMLD) . '</a>',
+            "active"     => '<a href="' . add_query_arg('filter', 'active') . '" ' . ($current == 'active' ? ' class="current"' : '') . '>' . esc_html__("Active", SMLD) . '</a>',
+            "not_active" => '<a href="' . add_query_arg('filter', 'not_active') . '" ' . ($current == 'not_active' ? ' class="current"' : '') . '>' . esc_html__("Not active", SMLD) . '</a>'
         ];
     }
 
