@@ -38,7 +38,11 @@ class Admin
             SM_SETTING_ADMIN_EMAIL => 'subs',
             SM_SETTING_SUB_PAGE => 0,
             SM_SETTING_UNSUB_PAGE => 0,
-            SM_SETTING_BARRED => ''
+            SM_SETTING_BARRED => '',
+            SM_SETTING_MAILTEXT => __("{BLOGNAME} has posted a new item, '{TITLE}'\n\n{POST}\n\nYou may view the latest post at\n{PERMALINK}\n\nYou received this e-mail because you asked to be notified when new updates are posted.\nBest regards,\n{MYNAME}\n{EMAIL}", SMLD),
+            SM_SETTING_MAILHEADER => '[{BLOGNAME}] {TITLE}',
+            SM_SETTING_CONFIRMTEXT => __("{BLOGNAME} has received a request to {ACTION} for this email address. To complete your request please click on the link below:\n\n{LINK}\n\nIf you did not request this, please feel free to disregard this notice!\n\nThank you,\n{MYNAME}.", SMLD),
+            SM_SETTING_CONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', SMLD)
         ]);
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
@@ -127,7 +131,7 @@ class Admin
 
     public function templates_page()
     {
-        //require_once S2PATH . 'admin/templates.php';
+        require_once __DIR__ . '/../pages/templates.php';
     }
 
     public function check_values($input)
@@ -138,7 +142,28 @@ class Admin
             SM_SETTING_ADMIN_EMAIL,
             SM_SETTING_SUB_PAGE,
             SM_SETTING_UNSUB_PAGE,
-            SM_SETTING_BARRED
+            SM_SETTING_BARRED,
+            SM_SETTING_MAILTEXT,
+            SM_SETTING_MAILHEADER,
+            SM_SETTING_CONFIRMTEXT,
+            SM_SETTING_CONFIRMHEADER
+        ];
+
+        $num_settings = [
+            SM_SETTING_SUB_PAGE,
+            SM_SETTING_UNSUB_PAGE
+        ];
+
+        $textarea_settings = [
+            SM_SETTING_BARRED,
+            SM_SETTING_MAILTEXT,
+            SM_SETTING_CONFIRMTEXT
+        ];
+
+        $textbox_settings = [
+            SM_SETTING_MAILHEADER,
+            SM_SETTING_CONFIRMHEADER,
+            SM_SETTING_ADMIN_EMAIL
         ];
 
         foreach ($all_settings as $key) {
@@ -146,16 +171,16 @@ class Admin
                 $new_input[$key] = $this->options[$key];
             }
 
-            if (in_array($key, [SM_SETTING_SUB_PAGE, SM_SETTING_UNSUB_PAGE], true)) {
+            if (in_array($key, $num_settings, true)) {
                 // Numerical inputs fixed for old option names.
                 if (is_numeric($input[$key]) && intval($input[$key]) >= 0) {
                     $new_input[$key] = intval($input[$key]);
                 }
-            } elseif ($key === SM_SETTING_BARRED) {
+            } elseif (in_array($key, $textarea_settings, true)) {
                 if (isset($input[$key])) {
                     $new_input[$key] = sanitize_textarea_field($input[$key]);
                 }
-            } elseif ($key === SM_SETTING_ADMIN_EMAIL) {
+            } elseif (in_array($key, $textbox_settings, true)) {
                 if (isset($input[$key])) {
                     $new_input[$key] = sanitize_text_field($input[$key]);
                 }

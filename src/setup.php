@@ -10,6 +10,10 @@ define('SM_SETTING_ADMIN_EMAIL', 'admin_email');
 define('SM_SETTING_SUB_PAGE', 'sub_page');
 define('SM_SETTING_UNSUB_PAGE', 'unsub_page');
 define('SM_SETTING_BARRED', 'barred');
+define('SM_SETTING_MAILTEXT', 'mail_text');
+define('SM_SETTING_MAILHEADER', 'mail_header');
+define('SM_SETTING_CONFIRMTEXT', 'confirm_text');
+define('SM_SETTING_CONFIRMHEADER', 'confirm_header');
 
 class Setup
 {
@@ -52,12 +56,12 @@ class Setup
         }
 
         $sql = "CREATE TABLE $wpdb->smini (
-			id int(11) NOT NULL auto_increment,
-			email varchar(64) NOT NULL,
-			active tinyint(1) default 0,
-			ts DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-			active_ts DATETIME DEFAULT NULL,
-			PRIMARY KEY (id) ) $charset_collate";
+            id int(11) NOT NULL auto_increment,
+            email varchar(64) NOT NULL,
+            active tinyint(1) default 0,
+            ts DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            active_ts DATETIME DEFAULT NULL,
+            PRIMARY KEY (id) ) $charset_collate";
 
         // check if table exists
         if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->smini)) !== $wpdb->smini) {
