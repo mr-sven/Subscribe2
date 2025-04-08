@@ -23,13 +23,17 @@ class SubscribersTable extends \WP_List_Table
 
     public function process_bulk_action()
     {
+        $action = $this->current_action();
+
+        if (!in_array($action, ['delete_all'], true)) {
+            return;
+        }
+
         // security check!
         if (!isset($_REQUEST['_wpnonce']) || !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-' . $this->_args['plural'])) {
             echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
             return;
         }
-
-        $action = $this->current_action();
 
         switch ($action) {
 
@@ -91,7 +95,7 @@ class SubscribersTable extends \WP_List_Table
     // Bind table with columns, data and all
     public function prepare_items()
     {
-		$this->process_bulk_action();
+        $this->process_bulk_action();
 
         $filter = (isset($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
 
