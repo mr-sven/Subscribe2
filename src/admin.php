@@ -1,9 +1,10 @@
 <?php
 
 declare(strict_types=1);
-defined('ABSPATH') or die('NO!');
 
 namespace SMini;
+
+defined('ABSPATH') or die('NO!');
 
 define('SM_SETTINGS_GROUP', 'smini_group');
 
@@ -86,7 +87,8 @@ class Admin
         foreach ($args['options'] as $option) {
             $checked = checked($this->options[$args['label_for']], $option['value'], false);
 
-            printf('<input type="radio" name="%1$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>',
+            printf(
+                '<input type="radio" name="%1$s" value="%2$s" %5$s /><label for="%4$s">%3$s</label>',
                 $args['label_for'],
                 $option['value'],
                 $option['label'],

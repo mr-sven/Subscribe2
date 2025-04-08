@@ -1,5 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
+namespace SMini;
+
 defined('ABSPATH') or die('NO!');
 
 namespace SMini;
@@ -17,7 +21,7 @@ class Setup
         global $wpdb;
 
         $smini_table = $wpdb->prefix . static::TABLE_NAME;
-        if ( ! isset( $wpdb->smini ) ) {
+        if (! isset($wpdb->smini)) {
             $wpdb->smini = $smini_table;
             $wpdb->tables[] = static::TABLE_NAME;
         }
@@ -36,15 +40,15 @@ class Setup
         static::prepare();
 
         $charset_collate = '';
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
-		}
+        if (! empty($wpdb->charset)) {
+            $charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+        }
 
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE {$wpdb->collate}";
-		}
+        if (! empty($wpdb->collate)) {
+            $charset_collate .= " COLLATE {$wpdb->collate}";
+        }
 
-		$sql = "CREATE TABLE $wpdb->smini (
+        $sql = "CREATE TABLE $wpdb->smini (
 			id int(11) NOT NULL auto_increment,
 			email varchar(64) NOT NULL,
 			active tinyint(1) default 0,
@@ -53,8 +57,7 @@ class Setup
 			PRIMARY KEY (id) ) $charset_collate";
 
         // check if table exists
-        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->smini)) !== $wpdb->smini)
-        {
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->smini)) !== $wpdb->smini) {
             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
             dbDelta($sql);
         }
