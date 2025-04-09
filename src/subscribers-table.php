@@ -50,9 +50,9 @@ class SubscribersTable extends \WP_List_Table
     {
         $current = (!empty($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
         return [
-            "all"        => '<a href="' . remove_query_arg('filter') . '" ' . ($current == 'all' ? ' class="current"' : '') . '>' . esc_html__("All", SMLD) . '</a>',
-            "active"     => '<a href="' . add_query_arg('filter', 'active') . '" ' . ($current == 'active' ? ' class="current"' : '') . '>' . esc_html__("Active", SMLD) . '</a>',
-            "not_active" => '<a href="' . add_query_arg('filter', 'not_active') . '" ' . ($current == 'not_active' ? ' class="current"' : '') . '>' . esc_html__("Not active", SMLD) . '</a>'
+            "all"        => '<a href="' . remove_query_arg('filter') . '" ' . ($current == 'all' ? ' class="current"' : '') . '>' . esc_html__("All", 'subscribe-mini') . '</a>',
+            "active"     => '<a href="' . add_query_arg('filter', 'active') . '" ' . ($current == 'active' ? ' class="current"' : '') . '>' . esc_html__("Active", 'subscribe-mini') . '</a>',
+            "not_active" => '<a href="' . add_query_arg('filter', 'not_active') . '" ' . ($current == 'not_active' ? ' class="current"' : '') . '>' . esc_html__("Not active", 'subscribe-mini') . '</a>'
         ];
     }
 
@@ -61,10 +61,10 @@ class SubscribersTable extends \WP_List_Table
     {
         return [
             'cb'        => '<input type="checkbox" />',
-            'email'     => __('EMail', SMLD),
-            'active'    => __('Active', SMLD),
-            'ts'        => __('Date registered', SMLD),
-            'active_ts' => __('Date activated', SMLD)
+            'email'     => __('EMail', 'subscribe-mini'),
+            'active'    => __('Active', 'subscribe-mini'),
+            'ts'        => __('Date registered', 'subscribe-mini'),
+            'active_ts' => __('Date activated', 'subscribe-mini')
         ];
     }
 
@@ -125,7 +125,7 @@ class SubscribersTable extends \WP_List_Table
     {
         $_wpnonce = esc_attr(wp_create_nonce("bulk-" . $this->_args['plural']));
         $actions = [
-            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s&_wpnonce=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'], $_wpnonce)
+            'delete' => sprintf('<a href="?page=%s&action=%s&element=%s&_wpnonce=%s">' . __('Delete', 'subscribe-mini') . '</a>', $_REQUEST['page'], 'delete', $item['id'], $_wpnonce)
         ];
         return sprintf('%1$s %2$s', $item['email'], $this->row_actions($actions));
     }
@@ -142,7 +142,7 @@ class SubscribersTable extends \WP_List_Table
     function get_bulk_actions()
     {
         return [
-            'delete_all' => __('Delete', SMLD),
+            'delete_all' => __('Delete', 'subscribe-mini'),
         ];
     }
 

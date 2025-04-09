@@ -23,14 +23,14 @@ class Frontend extends Core
         if (isset($_POST['subscribe']) || isset($_POST['unsubscribe'])) {
             if (! empty($_POST['firstname']) || ! empty($_POST['lastname']) || (! empty($_POST['uri']) && 'http://' !== sanitize_url($_POST['uri']))) {
                 // Looks like some invisible-to-user fields were changed; falsely report success.
-                return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
+                return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', 'subscribe-mini') . '</p>';
             }
 
             $email = sanitize_email($_POST['email']);
             if (false === $this->validate_email($email)) {
-                return '<p class="smini_error">' . esc_html__('Sorry, but that does not look like an email address to me.', SMLD) . '</p>';
+                return '<p class="smini_error">' . esc_html__('Sorry, but that does not look like an email address to me.', 'subscribe-mini') . '</p>';
             } elseif ($this->is_barred($email)) {
-                return '<p class="smini_error">' . esc_html__('Sorry, email addresses at that domain are currently barred due to spam, please use an alternative email address.', SMLD) . '</p>';
+                return '<p class="smini_error">' . esc_html__('Sorry, email addresses at that domain are currently barred due to spam, please use an alternative email address.', 'subscribe-mini') . '</p>';
             } else {
                 /*
                 $ip = rest_is_ip_address($_POST['ip']) ? $_POST['ip'] : $this->get_remote_ip();
@@ -44,7 +44,7 @@ class Frontend extends Core
                     );
 
                     if (in_array($ip, $ips, true)) {
-                        return __('Slow down, you move too fast.', 'subscribe2');
+                        return __('Slow down, you move too fast.', 'subscribe-mini');
                     }
                 }*/
 
@@ -58,23 +58,23 @@ class Frontend extends Core
                         $status = $this->send_confirm('add', $email);
 
                         if ($status) {
-                            return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
+                            return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', 'subscribe-mini') . '</p>';
                         } else {
-                            return '<p class="smini_error">' . esc_html__('Sorry, there seems to be an error on the server. Please try again later.', SMLD) . '</p>';
+                            return '<p class="smini_error">' . esc_html__('Sorry, there seems to be an error on the server. Please try again later.', 'subscribe-mini') . '</p>';
                         }
                     } else {
-                        return '<p class="smini_error">' . esc_html__('That email address is already subscribed.', SMLD) . '</p>';
+                        return '<p class="smini_error">' . esc_html__('That email address is already subscribed.', 'subscribe-mini') . '</p>';
                     }
                 } elseif (isset($_POST['unsubscribe'])) {
                     // Is this email a subscriber?
                     if ($active == null) {
-                        return '<p class="smini_error">' . esc_html__('That email address is not subscribed.', SMLD) . '</p>';
+                        return '<p class="smini_error">' . esc_html__('That email address is not subscribed.', 'subscribe-mini') . '</p>';
                     } else {
                         $status = $this->send_confirm('del', $email);
                         if ($status) {
-                            return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
+                            return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', 'subscribe-mini') . '</p>';
                         } else {
-                            return '<p class="smini_error">' . esc_html__('Sorry, there seems to be an error on the server. Please try again later.', SMLD) . '</p>';
+                            return '<p class="smini_error">' . esc_html__('Sorry, there seems to be an error on the server. Please try again later.', 'subscribe-mini') . '</p>';
                         }
                     }
                 }
@@ -88,10 +88,10 @@ class Frontend extends Core
             if ($id) {
                 $email = sanitize_email($this->get_email($id));
                 if (! $email || wp_hash($email) !== $hash) {
-                    return '<p class="smini_error">' . esc_html__('No such email address is registered.', SMLD) . '</p>';
+                    return '<p class="smini_error">' . esc_html__('No such email address is registered.', 'subscribe-mini') . '</p>';
                 }
             } else {
-                return '<p class="smini_error">' . esc_html__('No such email address is registered.', SMLD) . '</p>';
+                return '<p class="smini_error">' . esc_html__('No such email address is registered.', 'subscribe-mini') . '</p>';
             }
 
             $active = $wpdb->get_var($wpdb->prepare("SELECT active FROM $wpdb->smini WHERE email = %s", $email));
@@ -103,7 +103,7 @@ class Frontend extends Core
                         $this->admin_email('subscribe', $email);
                     }
                 }
-                return '<p class="smini_message">' . __('You have successfully subscribed!', SMLD) . '</p>';
+                return '<p class="smini_message">' . __('You have successfully subscribed!', 'subscribe-mini') . '</p>';
             } elseif ('0' === $action) {
                 if ('0' !== $active) {
                     $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
@@ -111,7 +111,7 @@ class Frontend extends Core
                         $this->admin_email('unsubscribe', $email);
                     }
                 }
-                return '<p class="smini_message">' . __('You have successfully unsubscribed!', SMLD) . '</p>';
+                return '<p class="smini_message">' . __('You have successfully unsubscribed!', 'subscribe-mini') . '</p>';
             }
         }
 
@@ -275,7 +275,7 @@ class Frontend extends Core
         } else {
             $imprinturl = get_option('home');
         }
-        $imprintlink = '<a href="' . $imprinturl . '">' . esc_html__('Imprint / Dataprotection', SMLD) . '</a>';
+        $imprintlink = '<a href="' . $imprinturl . '">' . esc_html__('Imprint / Dataprotection', 'subscribe-mini') . '</a>';
 
         $codes = [
             '{BLOGNAME}',
@@ -292,7 +292,7 @@ class Frontend extends Core
             get_option('home'),
             stripslashes(html_entity_decode(get_option('blogname'), ENT_QUOTES)),
             get_option('admin_email'),
-            $action === 'add' ? __('Subscribe', SMLD) : __('Unsubscribe', SMLD),
+            $action === 'add' ? __('Subscribe', 'subscribe-mini') : __('Unsubscribe', 'subscribe-mini'),
             $link,
             $imprintlink,
             $imprinturl,
@@ -344,11 +344,11 @@ class Frontend extends Core
         $blogname = get_option('blogname');
         $subject  = empty($blogname) ? '[' . stripslashes(html_entity_decode($blogname, ENT_QUOTES)) . '] ' : '';
         if ('subscribe' === $action) {
-            $subject .= __('New Subscription', 'subscribe2');
-            $message  = $email . ' ' . __('subscribed to email notifications!', 'subscribe2');
+            $subject .= __('New Subscription', 'subscribe-mini');
+            $message  = $email . ' ' . __('subscribed to email notifications!', 'subscribe-mini');
         } elseif ('unsubscribe' === $action) {
-            $subject .= __('New Unsubscription', 'subscribe2');
-            $message  = $email . ' ' . __('unsubscribed from email notifications!', 'subscribe2');
+            $subject .= __('New Unsubscription', 'subscribe-mini');
+            $message  = $email . ' ' . __('unsubscribed from email notifications!', 'subscribe-mini');
         }
 
         $subject = html_entity_decode($subject, ENT_QUOTES);

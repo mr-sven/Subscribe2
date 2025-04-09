@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SMini;
 
-require_once __DIR__ . '/../classes/Minify/CSS.php';
+require_once __DIR__ . '/Minify/CSS.php';
 
 defined('ABSPATH') or die('NO!');
 
@@ -68,7 +68,7 @@ abstract class Core
         } else {
             $imprinturl = get_option('home');
         }
-        $imprintlink = '<a href="' . $imprinturl . '">' . esc_html__('Imprint / Dataprotection', SMLD) . '</a>';
+        $imprintlink = '<a href="' . $imprinturl . '">' . esc_html__('Imprint / Dataprotection', 'subscribe-mini') . '</a>';
 
         $codes = [
             '{BLOGNAME}',
@@ -291,7 +291,7 @@ abstract class Core
             $page_url = add_query_arg('smini', "0" . wp_hash($email) . $id, $page_url);
 
             if ($type == 'html') {
-                $page_url = '<a href="' . $page_url . '">' . __('Unsubscribe', SMLD) . '</a>';
+                $page_url = '<a href="' . $page_url . '">' . __('Unsubscribe', 'subscribe-mini') . '</a>';
             }
 
             return str_replace('{UNSUBLINK}', $page_url, $content);

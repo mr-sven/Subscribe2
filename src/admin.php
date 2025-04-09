@@ -24,11 +24,11 @@ class Admin extends Core
 
     public function admin_menu()
     {
-        add_menu_page(__('Subscribe Mini', SMLD), __('Subscribe Mini', SMLD), apply_filters('smin_capability', 'read', 'user'), 'smini_subscribers', null, 'dashicons-buddicons-pm', 30);
-        $subscribers_page = add_submenu_page('smini_subscribers', __('Subscribers', SMLD), __('Subscribers', SMLD), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
+        add_menu_page(__('Subscribe Mini', 'subscribe-mini'), __('Subscribe Mini', 'subscribe-mini'), apply_filters('smin_capability', 'read', 'user'), 'smini_subscribers', null, 'dashicons-buddicons-pm', 30);
+        $subscribers_page = add_submenu_page('smini_subscribers', __('Subscribers', 'subscribe-mini'), __('Subscribers', 'subscribe-mini'), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
         add_action("load-" . $subscribers_page, [$this, 'subscribers_page_load']);
-        add_submenu_page('smini_subscribers', __('Options', SMLD), __('Options', SMLD), apply_filters('smin_capability', 'manage_options', 'options'), static::OPTIONS_PAGE, array($this, 'options_page'));
-        add_submenu_page('smini_subscribers', __('Templates', SMLD), __('Templates', SMLD), apply_filters('smin_capability', 'manage_options', 'templates'), 'smini_templates', array($this, 'templates_page'));
+        add_submenu_page('smini_subscribers', __('Options', 'subscribe-mini'), __('Options', 'subscribe-mini'), apply_filters('smin_capability', 'manage_options', 'options'), static::OPTIONS_PAGE, array($this, 'options_page'));
+        add_submenu_page('smini_subscribers', __('Templates', 'subscribe-mini'), __('Templates', 'subscribe-mini'), apply_filters('smin_capability', 'manage_options', 'templates'), 'smini_templates', array($this, 'templates_page'));
     }
 
     public function admin_init()
@@ -38,10 +38,10 @@ class Admin extends Core
             SM_SETTING_SUB_PAGE => 0,
             SM_SETTING_IMPRINT_PAGE => 0,
             SM_SETTING_BARRED => '',
-            SM_SETTING_MAILTEXT => __("{BLOGNAME} has posted a new item, '{TITLE}'\n\n{POST}\n\nYou may view the latest post at\n{PERMALINK}\n\nYou received this e-mail because you asked to be notified when new updates are posted.\nBest regards,\n{MYNAME}\n{EMAIL}", SMLD),
+            SM_SETTING_MAILTEXT => __("{BLOGNAME} has posted a new item, '{TITLE}'\n\n{POST}\n\nYou may view the latest post at\n{PERMALINK}\n\nYou received this e-mail because you asked to be notified when new updates are posted.\nBest regards,\n{MYNAME}\n{EMAIL}", 'subscribe-mini'),
             SM_SETTING_MAILHEADER => '[{BLOGNAME}] {TITLE}',
-            SM_SETTING_CONFIRMTEXT => __("{BLOGNAME} has received a request to {ACTION} for this email address. To complete your request please click on the link below:\n\n{LINK}\n\nIf you did not request this, please feel free to disregard this notice!\n\nThank you,\n{MYNAME}.", SMLD),
-            SM_SETTING_CONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', SMLD)
+            SM_SETTING_CONFIRMTEXT => __("{BLOGNAME} has received a request to {ACTION} for this email address. To complete your request please click on the link below:\n\n{LINK}\n\nIf you did not request this, please feel free to disregard this notice!\n\nThank you,\n{MYNAME}.", 'subscribe-mini'),
+            SM_SETTING_CONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', 'subscribe-mini')
         ]);
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
@@ -50,7 +50,7 @@ class Admin extends Core
     {
         add_meta_box(
             'smini_override',
-            __('Subscribe Mini Notification Override', SMLD),
+            __('Subscribe Mini Notification Override', 'subscribe-mini'),
             [$this, 'override_meta'],
             'post',
             'advanced',
@@ -63,7 +63,7 @@ class Admin extends Core
 
         add_meta_box(
             'smini_preview',
-            __('Subscribe Mini Preview', SMLD),
+            __('Subscribe Mini Preview', 'subscribe-mini'),
             [$this, 'preview_meta'],
             'post',
             'side',
@@ -77,7 +77,7 @@ class Admin extends Core
         if ($post->post_status === 'publish') {
             add_meta_box(
                 'smini_resend',
-                __('Subscribe Mini Resend', SMLD),
+                __('Subscribe Mini Resend', 'subscribe-mini'),
                 array($this, 'resend_meta'),
                 'post',
                 'side',
@@ -95,7 +95,7 @@ class Admin extends Core
         $s2mail = get_post_meta($post->ID, '_sminimail', true);
 
         echo '<input type="hidden" name="sminimeta_nonce" id="sminimeta_nonce" value="' . esc_attr(wp_create_nonce(wp_hash(plugin_basename(__FILE__)))) . '" />';
-        echo esc_html__('Check here to disable sending of an email notification for this post/page', SMLD);
+        echo esc_html__('Check here to disable sending of an email notification for this post/page', 'subscribe-mini');
         echo '&nbsp;&nbsp;<input type="checkbox" name="smini_meta_field" value="no"';
 
         if ('no' === $s2mail) {
@@ -107,14 +107,14 @@ class Admin extends Core
 
     public function preview_meta()
     {
-        echo '<p>' . esc_html__('Send preview email of this post to currently logged in user:', SMLD) . '</p>' . "\r\n";
-        echo '<input class="button" name="smini_preview" type="submit" value="' . esc_attr(__('Send Preview', SMLD)) . '" />' . "\r\n";
+        echo '<p>' . esc_html__('Send preview email of this post to currently logged in user:', 'subscribe-mini') . '</p>' . "\r\n";
+        echo '<input class="button" name="smini_preview" type="submit" value="' . esc_attr(__('Send Preview', 'subscribe-mini')) . '" />' . "\r\n";
     }
 
     public function resend_meta()
     {
-        echo '<p>' . esc_html__('Resend the notification email of this post to current subscribers:', SMLD) . '</p>' . "\r\n";
-        echo '<input class="button" name="smini_resend" type="submit" value="' . esc_attr(__('Resend Notification', SMLD)) . '" />' . "\r\n";
+        echo '<p>' . esc_html__('Resend the notification email of this post to current subscribers:', 'subscribe-mini') . '</p>' . "\r\n";
+        echo '<input class="button" name="smini_resend" type="submit" value="' . esc_attr(__('Resend Notification', 'subscribe-mini')) . '" />' . "\r\n";
     }
 
     public function save_post($post_id, $post)
@@ -174,7 +174,7 @@ class Admin extends Core
         }
 
         $args = array(
-            'label'   => __('Number of subscribers per page: ', SMLD),
+            'label'   => __('Number of subscribers per page: ', 'subscribe-mini'),
             'default' => 25,
             'option'  => 'subscribers_per_page',
         );
@@ -234,7 +234,7 @@ class Admin extends Core
         add_settings_section(static::OPTIONS_SECTION, '', null, static::OPTIONS_PAGE);
         add_settings_field(
             SM_SETTING_ADMIN_EMAIL,
-            __('Send Admins notifications for new', SMLD),
+            __('Send Admins notifications for new', 'subscribe-mini'),
             [$this, 'create_radio'],
             static::OPTIONS_PAGE,
             static::OPTIONS_SECTION,
@@ -245,26 +245,26 @@ class Admin extends Core
                 'options' => [
                     [
                         'value' => 'subs',
-                        'label' => __('Subscriptions', SMLD)
+                        'label' => __('Subscriptions', 'subscribe-mini')
                     ],
                     [
                         'value' => 'unsubs',
-                        'label' => __('Unsubscriptions', SMLD)
+                        'label' => __('Unsubscriptions', 'subscribe-mini')
                     ],
                     [
                         'value' => 'both',
-                        'label' => __('Both', SMLD)
+                        'label' => __('Both', 'subscribe-mini')
                     ],
                     [
                         'value' => 'none',
-                        'label' => __('Neither', SMLD)
+                        'label' => __('Neither', 'subscribe-mini')
                     ]
                 ]
             ]
         );
         add_settings_field(
             SM_SETTING_SUB_PAGE,
-            __('Set default Subscribe Mini page as', SMLD),
+            __('Set default Subscribe Mini page as', 'subscribe-mini'),
             [$this, 'create_page_dropdown'],
             static::OPTIONS_PAGE,
             static::OPTIONS_SECTION,
@@ -276,7 +276,7 @@ class Admin extends Core
         );
         add_settings_field(
             SM_SETTING_IMPRINT_PAGE,
-            __('Set imprint/dataprotection page as', SMLD),
+            __('Set imprint/dataprotection page as', 'subscribe-mini'),
             [$this, 'create_page_dropdown'],
             static::OPTIONS_PAGE,
             static::OPTIONS_SECTION,
@@ -288,7 +288,7 @@ class Admin extends Core
         );
         add_settings_field(
             SM_SETTING_BARRED,
-            __('Barred Domains', SMLD),
+            __('Barred Domains', 'subscribe-mini'),
             [$this, 'create_textarea'],
             static::OPTIONS_PAGE,
             static::OPTIONS_SECTION,
@@ -297,8 +297,8 @@ class Admin extends Core
                 'key' => SM_SETTING_BARRED,
                 'class' => SM_SETTING_BARRED,
                 'hint' => [
-                    __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', SMLD),
-                    __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', SMLD)
+                    __('Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed', 'subscribe-mini'),
+                    __('Use a new line for each entry and omit the "@" symbol, for example !email.com, hotmail.com, yahoo.*', 'subscribe-mini')
                 ]
             ]
         );
@@ -321,7 +321,7 @@ class Admin extends Core
 
             $this->publish($preview_post, $recipient);
 
-            echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', SMLD) . '</strong></p></div>';
+            echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', 'subscribe-mini') . '</strong></p></div>';
         }
         require_once __DIR__ . '/../pages/templates.php';
     }
@@ -408,7 +408,7 @@ class Admin extends Core
         wp_dropdown_pages([
             'name' => $args['label_for'],
             'echo' => 1,
-            'show_option_none' => __('&mdash; select &mdash;', SMLD),
+            'show_option_none' => __('&mdash; select &mdash;', 'subscribe-mini'),
             'option_none_value' => 0,
             'selected' => $this->options[$args['key']]
         ]);
