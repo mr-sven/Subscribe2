@@ -61,7 +61,6 @@ class Widget extends \WP_Widget
 ?>
         <div class="smini_widget">
             <?= esc_html__('(Un)Subscribe to Posts', 'subscribe-mini'); ?>
-            <?= dirname(plugin_basename(__FILE__)) ?>
             <form method="post" <?= $action ?>>
                 <input type="hidden" name="ip" value="<?= esc_attr($_SERVER['REMOTE_ADDR']) ?>" />
                 <span style="display:none !important">

@@ -45,6 +45,7 @@ if ( function_exists( 'set_time_limit' ) ) {
 // define language domain
 //define(''subscribe-mini'', 'subscribe-mini');
 define('SMOPTIONS', 'smini_options');
+define('SMPLUGINDIR', dirname(plugin_basename(__FILE__)));
 
 require_once __DIR__ . "/src/setup.php";
 require_once __DIR__ . "/src/core.php";
