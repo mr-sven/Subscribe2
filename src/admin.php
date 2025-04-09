@@ -46,13 +46,13 @@ class Admin extends Core
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
-    public function add_meta_boxes($post_type)
+    public function add_meta_boxes()
     {
         add_meta_box(
             'smini_override',
             __('Subscribe Mini Notification Override', SMLD),
             [$this, 'override_meta'],
-            $post_type,
+            'post',
             'advanced',
             'default',
             [
@@ -65,7 +65,7 @@ class Admin extends Core
             'smini_preview',
             __('Subscribe Mini Preview', SMLD),
             [$this, 'preview_meta'],
-            $post_type,
+            'post',
             'side',
             'default',
             [
