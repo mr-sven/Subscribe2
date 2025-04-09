@@ -50,8 +50,6 @@
                     <dd><?= wp_kses_post(__('a reference style list of links at the end of the email with corresponding numbers in the content<br>(<i>for the full content plain text per-post email only</i>)', SMLD)) ?></dd>
                     <dt><b>{PERMALINK}</b></dt>
                     <dd><?= wp_kses_post(__("the post's permalink<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
-                    <dt><b>{TINYLINK}</b></dt>
-                    <dd><?= esc_html__("the post's permalink after conversion by TinyURL", SMLD) ?></dd>
                     <dt><b>{PERMAURL}</b></dt>
                     <dd><?= wp_kses_post(__("the post's unformatted permalink<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
                     <dt><b>{DATE}</b></dt>
@@ -70,14 +68,6 @@
                     <dd><?= wp_kses_post(__('a generated unsubscribe link<br>(<i>only used in the email notification template</i>)', SMLD)) ?></dd>
                     <dt><b>{ACTION}</b></dt>
                     <dd><?= wp_kses_post(__('Action performed by LINK in confirmation email<br>(<i>only used in the confirmation email template</i>)', SMLD)) ?></dd>
-                    <dt><b>{CATS}</b></dt>
-                    <dd><?= esc_html__("the post's assigned categories", SMLD) ?></dd>
-                    <dt><b>{TAGS}</b></dt>
-                    <dd><?= esc_html__("the post's assigned Tags", SMLD) ?></dd>
-                    <dt><b>{COUNT}</b></dt>
-                    <dd><?= wp_kses_post(__('the number of posts included in the digest email<br>(<i>for digest emails only</i>)', SMLD)) ?></dd>
-                    <dt><b>{IMAGE}</b></dt>
-                    <dd><?= esc_html__("the post's featured image", SMLD) ?></dd>
                 </dl>
             </td>
         </tr>
