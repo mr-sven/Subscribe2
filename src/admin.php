@@ -38,7 +38,6 @@ class Admin extends Core
         $this->options = get_option(SMOPTIONS, [
             SM_SETTING_ADMIN_EMAIL => 'subs',
             SM_SETTING_SUB_PAGE => 0,
-            SM_SETTING_UNSUB_PAGE => 0,
             SM_SETTING_BARRED => '',
             SM_SETTING_MAILTEXT => __("{BLOGNAME} has posted a new item, '{TITLE}'\n\n{POST}\n\nYou may view the latest post at\n{PERMALINK}\n\nYou received this e-mail because you asked to be notified when new updates are posted.\nBest regards,\n{MYNAME}\n{EMAIL}", SMLD),
             SM_SETTING_MAILHEADER => '[{BLOGNAME}] {TITLE}',
@@ -155,18 +154,6 @@ class Admin extends Core
             ]
         );
         add_settings_field(
-            SM_SETTING_UNSUB_PAGE,
-            __('Set Subscribe Mini unsubscribe page', SMLD),
-            [$this, 'create_page_dropdown'],
-            static::OPTIONS_PAGE,
-            static::OPTIONS_SECTION,
-            [
-                'label_for' => SMOPTIONS . '[' . SM_SETTING_UNSUB_PAGE . ']',
-                'key' => SM_SETTING_UNSUB_PAGE,
-                'class' => SM_SETTING_UNSUB_PAGE
-            ]
-        );
-        add_settings_field(
             SM_SETTING_BARRED,
             __('Barred Domains', SMLD),
             [$this, 'create_textarea'],
@@ -198,7 +185,6 @@ class Admin extends Core
         $all_settings = [
             SM_SETTING_ADMIN_EMAIL,
             SM_SETTING_SUB_PAGE,
-            SM_SETTING_UNSUB_PAGE,
             SM_SETTING_BARRED,
             SM_SETTING_MAILTEXT,
             SM_SETTING_MAILHEADER,
@@ -208,7 +194,6 @@ class Admin extends Core
 
         $num_settings = [
             SM_SETTING_SUB_PAGE,
-            SM_SETTING_UNSUB_PAGE
         ];
 
         $textarea_settings = [
