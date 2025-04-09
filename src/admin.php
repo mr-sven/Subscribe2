@@ -82,13 +82,13 @@ class Admin
             case 'delete_all':
                 if (isset($_REQUEST['element']) && is_array($_REQUEST['element'])) {
                     foreach ($_REQUEST['element'] as $id) {
-                        // $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
+                        $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
                     }
                 }
                 break;
 
             case 'delete':
-                // $wpdb->delete($wpdb->smini, ['id' => (int)$_REQUEST['element']]);
+                $wpdb->delete($wpdb->smini, ['id' => (int)$_REQUEST['element']]);
                 wp_redirect(admin_url('admin.php?page=smini_subscribers'));
                 break;
 
