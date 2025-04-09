@@ -50,6 +50,7 @@ define('SMLD', 'subscribe2');
 define('SMOPTIONS', 'smini_options');
 
 require_once __DIR__ . "/src/setup.php";
+require_once __DIR__ . "/src/core.php";
 
 // is admin panel
 if (is_admin())

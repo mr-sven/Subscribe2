@@ -8,7 +8,7 @@ defined('ABSPATH') or die('NO!');
 
 define('SM_SETTINGS_GROUP', 'smini_group');
 
-class Admin
+class Admin extends Core
 {
     private const OPTIONS_PAGE = 'smini_options';
     private const OPTIONS_SECTION = 'smini_settings';
@@ -17,9 +17,9 @@ class Admin
      */
     private $options;
 
-    public function __construct()
+    public function loaded()
     {
-        Setup::prepare();
+        parent::loaded();
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'admin_init']);
     }
