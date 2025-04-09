@@ -21,6 +21,7 @@ abstract class Core
 
     public function widget_init()
     {
-
+        require_once __DIR__ . "/widget.php";
+        register_widget(Widget::class);
     }
 }
