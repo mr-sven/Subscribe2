@@ -49,12 +49,12 @@ class Widget extends \WP_Widget
         }
 
         $action = '';
-        if (is_numeric($args['id'])) {
+        if ($options[SM_SETTING_SUB_PAGE] > 0) {
+            $action = ' action="' . get_permalink($options[SM_SETTING_SUB_PAGE]) . '"';
+        } elseif (is_numeric($args['id'])) {
             $action = ' action="' . get_permalink($args['id']) . '"';
         } elseif ('home' === $args['id']) {
             $action = ' action="' . get_site_url() . '"';
-        } elseif ($options[SM_SETTING_SUB_PAGE] > 0) {
-            $action = ' action="' . get_permalink($options[SM_SETTING_SUB_PAGE]) . '"';
         }
 
         $value = __('Enter email address...', SMLD);
