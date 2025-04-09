@@ -24,7 +24,7 @@ abstract class Core
 
     public function load_translations()
     {
-        load_plugin_textdomain('subscribe-mini', false, dirname(plugin_basename(__FILE__)) . '/languages');
+        load_plugin_textdomain('subscribe-mini', false, __DIR__ . '/../languages');
     }
 
     public function loaded()
