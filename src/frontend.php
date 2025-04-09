@@ -275,6 +275,13 @@ class Frontend extends Core
         // Sort the headers now so we have all substitute information.
         $mailheaders = $this->headers();
 
+        if ($this->options[SM_SETTING_IMPRINT_PAGE] > 0) {
+            $imprintlink = get_permalink($this->options[SM_SETTING_IMPRINT_PAGE]);
+        } else {
+            $imprintlink = get_option('home');
+        }
+        $imprinturl = '<a href="' . $imprintlink . '">' . esc_html__('Imprint / Dataprotection', SMLD) . '</a>';
+
         $codes = [
             '{BLOGNAME}',
             '{BLOGLINK}',
@@ -282,6 +289,8 @@ class Frontend extends Core
             '{EMAIL}',
             '{ACTION}',
             '{LINK}',
+            '{IMPRINTLINK}',
+            '{IMPRINTURL}',
         ];
         $replaces = [
             html_entity_decode(get_option('blogname'), ENT_QUOTES),
@@ -290,6 +299,8 @@ class Frontend extends Core
             get_option('admin_email'),
             $action === 'add' ? __('Subscribe', SMLD) : __('Unubscribe', SMLD),
             $link,
+            $imprintlink,
+            $imprinturl,
         ];
 
         $body = str_replace($codes, $replaces, stripslashes($this->options[SM_SETTING_CONFIRMTEXT]));

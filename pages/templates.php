@@ -52,6 +52,10 @@
                     <dd><?= wp_kses_post(__("the post's permalink<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
                     <dt><b>{PERMAURL}</b></dt>
                     <dd><?= wp_kses_post(__("the post's unformatted permalink<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
+                    <dt><b>{IMPRINTLINK}</b></dt>
+                    <dd><?= wp_kses_post(__("the imprint link<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
+                    <dt><b>{IMPRINTURL}</b></dt>
+                    <dd><?= wp_kses_post(__("the unformatted imprint link<br>(<i>for per-post emails only</i>)", SMLD)) ?></dd>
                     <dt><b>{DATE}</b></dt>
                     <dd><?= wp_kses_post(__('the date the post was made<br>(<i>for per-post emails only</i>)', SMLD)) ?></dd>
                     <dt><b>{TIME}</b></dt>
