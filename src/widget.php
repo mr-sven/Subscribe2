@@ -39,31 +39,43 @@ class Widget extends \WP_Widget
 
     public function widget($args, $instance)
     {
+        $options = get_option(SMOPTIONS);
+
         $title = empty($instance['title']) ? __('Subscribe Mini Widget', SMLD) : $instance['title'];
 
         echo wp_kses_post($args['before_widget']);
         if (! empty($title)) {
             echo wp_kses_post($args['before_title']) . esc_attr($title) . wp_kses_post($args['after_title']);
         }
+
+        $action = '';
+        if (is_numeric($args['id'])) {
+            $action = ' action="' . get_permalink($args['id']) . '"';
+        } elseif ('home' === $args['id']) {
+            $action = ' action="' . get_site_url() . '"';
+        } elseif ($options[SM_SETTING_SUB_PAGE] > 0) {
+            $action = ' action="' . get_permalink($options[SM_SETTING_SUB_PAGE]) . '"';
+        }
+
         $value = __('Enter email address...', SMLD);
 ?>
         <div class="smini_widget">
             <?= esc_html__('(Un)Subscribe to Posts', SMLD); ?>
-            <form method="post" action="<?= esc_url(admin_url('admin-post.php')); ?>">
+            <form method="post" <?= $action ?>>
                 <input type="hidden" name="ip" value="<?= esc_attr($_SERVER['REMOTE_ADDR']) ?>" />
                 <span style="display:none !important">
-                    <label for="firstname"><?=__( 'Leave This Blank:', SMLD)?></label><input type="text" id="firstname" name="firstname" />
-                    <label for="lastname"><?=__( 'Leave This Blank Too:', SMLD)?></label><input type="text" id="lastname" name="lastname" />
-                    <label for="uri"><?=__( 'Do Not Change This:', SMLD)?></label><input type="text" id="uri" name="uri" value="http://" />
+                    <label for="firstname"><?= __('Leave This Blank:', SMLD) ?></label><input type="text" id="firstname" name="firstname" />
+                    <label for="lastname"><?= __('Leave This Blank Too:', SMLD) ?></label><input type="text" id="lastname" name="lastname" />
+                    <label for="uri"><?= __('Do Not Change This:', SMLD) ?></label><input type="text" id="uri" name="uri" value="http://" />
                 </span>
                 <p>
                     <label for="s2email"><?= esc_html__('Your email:', SMLD) ?></label><br>
                     <input type="email" name="email" id="s2email" value="<?= esc_attr($value) ?>" onfocus="if (this.value === '<?= $value ?>') {this.value = '';}" onblur="if (this.value === '') {this.value = '<?= $value ?>';}" />
-                    <input type="submit" name="subscribe" value="<?=esc_html__( 'Subscribe', SMLD)?>" />&nbsp;<input type="submit" name="unsubscribe" value="<?=esc_html__( 'Unsubscribe', SMLD)?>" />
+                    <input type="submit" name="subscribe" value="<?= esc_html__('Subscribe', SMLD) ?>" />&nbsp;<input type="submit" name="unsubscribe" value="<?= esc_html__('Unsubscribe', SMLD) ?>" />
                 </p>
             </form>
         </div>
-<?php
+    <?php
         echo wp_kses_post($args['after_widget']);
     }
 
