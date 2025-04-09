@@ -46,7 +46,7 @@ class Admin extends Core
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
-    public function add_meta_boxes($post_type, $post)
+    public function add_meta_boxes($post_type)
     {
         add_meta_box(
             'smini_override',
