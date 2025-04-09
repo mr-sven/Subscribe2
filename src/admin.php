@@ -308,6 +308,21 @@ class Admin extends Core
 
     public function templates_page()
     {
+        if (isset($_POST['preview'])) {
+            global $current_user;
+
+            $recipient = (object) [
+                'email' => $current_user->user_email,
+                'id' => $current_user->ID,
+            ];
+
+            $preview_posts = get_posts('numberposts=1');
+            $preview_post  = $preview_posts[0];
+
+            $this->publish($preview_post, $recipient);
+
+            echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', 'subscribe2') . '</strong></p></div>';
+        }
         require_once __DIR__ . '/../pages/templates.php';
     }
 
