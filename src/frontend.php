@@ -8,11 +8,6 @@ defined('ABSPATH') or die('NO!');
 
 class Frontend extends Core
 {
-    /**
-     * @var array
-     */
-    private $options;
-
     public function loaded()
     {
         parent::loaded();
@@ -333,40 +328,6 @@ class Frontend extends Core
         return $wpdb->get_var($wpdb->prepare("SELECT email FROM $wpdb->smini WHERE id=%d", $id));
     }
 
-    public function headers($type = 'text')
-    {
-        $myname  = html_entity_decode(get_option('blogname'), ENT_QUOTES);
-        $myemail = get_option('admin_email');
-
-        $char_set = get_option('blog_charset');
-        if (function_exists('mb_encode_mimeheader')) {
-            $header['From']     = mb_encode_mimeheader($myname, $char_set, 'Q') . ' <' . $myemail . '>';
-            $header['Reply-To'] = mb_encode_mimeheader($myname, $char_set, 'Q') . ' <' . $myemail . '>';
-        } else {
-            $header['From']     = $myname . ' <' . $myemail . '>';
-            $header['Reply-To'] = $myname . ' <' . $myemail . '>';
-        }
-
-        $header['Return-Path'] = '<' . $myemail . '>';
-        $header['List-ID']     = html_entity_decode(get_option('blogname'), ENT_QUOTES) . ' <' . strtolower(esc_html($_SERVER['SERVER_NAME'])) . '>';
-        if ('html' === $type) {
-            // To send HTML mail, the Content-Type header must be set.
-            $header['Content-Type'] = get_option('html_type') . '; charset="' . $char_set . '"';
-        } elseif ('text' === $type) {
-            $header['Content-Type'] = 'text/plain; charset="' . $char_set . '"';
-        }
-
-        // Collapse the headers using $key as the header name.
-        foreach ($header as $key => $value) {
-            $headers[$key] = $key . ': ' . $value;
-        }
-
-        $headers  = implode("\n", $headers);
-        $headers .= "\n";
-
-        return $headers;
-    }
-
     public function substitute_subscribe($string = '', $digest_post_ids = array())
     {
         if (empty($string)) {
@@ -411,28 +372,4 @@ class Frontend extends Core
             $status = wp_mail($recipient, $subject, $message, $headers);
         }
     }
-    /*
-    public function substitute_subscribe($string = '', $digest_post_ids = array())
-    {
-        if (empty($string)) {
-            return;
-        }
-
-        $string = str_replace('{BLOGNAME}', html_entity_decode(get_option('blogname'), ENT_QUOTES), $string);
-        $string = str_replace('{BLOGLINK}', get_option('home'), $string);
-        $string = str_replace('{TITLE}', stripslashes($this->post_title), $string);
-        $string = str_replace('{TITLETEXT}', stripslashes($this->post_title_text), $string);
-        $string = str_replace('{PERMAURL}', $this->get_tracking_link($this->permalink), $string);
-        $link   = '<a href="' . $this->get_tracking_link($this->permalink) . '">' . $this->get_tracking_link($this->permalink) . '</a>';
-        $string = str_replace('{PERMALINK}', $link, $string);
-
-        $string = str_replace('{DATE}', $this->post_date, $string);
-        $string = str_replace('{TIME}', $this->post_time, $string);
-        $string = str_replace('{MYNAME}', stripslashes($this->myname), $string);
-        $string = str_replace('{EMAIL}', $this->myemail, $string);
-        $string = str_replace('{AUTHORNAME}', stripslashes($this->authorname), $string);
-        $string = str_replace('{CATS}', $this->post_cat_names, $string);
-        $string = str_replace('{TAGS}', $this->post_tag_names, $string);
-        $string = str_replace('{COUNT}', $this->post_count, $string);
-    }*/
 }

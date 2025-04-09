@@ -12,16 +12,13 @@ class Admin extends Core
 {
     private const OPTIONS_PAGE = 'smini_options';
     private const OPTIONS_SECTION = 'smini_settings';
-    /**
-     * @var array
-     */
-    private $options;
 
     public function loaded()
     {
         parent::loaded();
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'admin_init']);
+        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 10, 2);
     }
 
     public function admin_menu()
@@ -48,6 +45,41 @@ class Admin extends Core
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
+    public function add_meta_boxes($post_type, $post)
+    {
+        if ($post_type !== 'post') {
+            return;
+        }
+
+        add_meta_box(
+            'smini_override',
+            __('Subscribe Mini Notification Override', SMLD),
+            [$this, 'override_meta'],
+            $post_type,
+            'advanced',
+            'default',
+            array(
+                '__block_editor_compatible_meta_box' => false,
+                '__back_compat_meta_box'             => true,
+            )
+        );
+    }
+
+    public function override_meta($post)
+    {
+        $s2mail = get_post_meta($post->ID, '_sminimail', true);
+
+        echo '<input type="hidden" name="sminimeta_nonce" id="sminimeta_nonce" value="' . esc_attr(wp_create_nonce(wp_hash(plugin_basename(__FILE__)))) . '" />';
+        echo esc_html__('Check here to disable sending of an email notification for this post/page', SMLD);
+        echo '&nbsp;&nbsp;<input type="checkbox" name="smini_meta_field" value="no"';
+
+        if ('no' === $s2mail) {
+            echo ' checked="checked"';
+        }
+
+        echo ' />';
+    }
+
     public function subscribers_page_load()
     {
         if (isset($_REQUEST['action']) && '-1' !== $_REQUEST['action']) {
@@ -71,14 +103,15 @@ class Admin extends Core
             return;
         }
 
-        if (!isset($_REQUEST['_wpnonce']) ||
+        if (
+            !isset($_REQUEST['_wpnonce']) ||
             empty($_REQUEST['_wpnonce']) ||
-            !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-subscribers')) {
+            !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-subscribers')
+        ) {
             return;
         }
 
-        switch ($action)
-        {
+        switch ($action) {
             case 'delete_all':
                 if (isset($_REQUEST['element']) && is_array($_REQUEST['element'])) {
                     foreach ($_REQUEST['element'] as $id) {
