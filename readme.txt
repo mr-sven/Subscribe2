@@ -27,7 +27,7 @@ Email notifications can be sent on a per-post basis.
 Subscription requests allows users to publicly subscribe (**Public Subscribers**) by submitting their email address in an easy to use form.
 Admins are given control over the presentation of the email notifications, can bulk manage subscriptions for users and manually send email notices to subscribers.
 
-The format of the email can also be customised for per-post notifications, Subscribe2 can generate emails for each of the following formats:
+The format of the email can also be customised for per-post notifications, Subscribe Mini can generate emails for each of the following formats:
 
 * HTML excerpt.
 

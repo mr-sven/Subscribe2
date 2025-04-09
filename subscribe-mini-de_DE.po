@@ -34,7 +34,7 @@ msgid "Subscribers"
 msgstr "Abonnenten"
 
 #. Description of the plugin
-#: subscribe2.php
+#: subscribe-mini.php
 msgid "Notifies an email list when new entries are posted."
 msgstr ""
 
@@ -170,14 +170,12 @@ msgstr ""
 #: pages/subscribers.php:13
 #: src/frontend.php:295
 #: src/widget.php:74
-#: widget.php:74
 msgid "Subscribe"
 msgstr "Anmelden"
 
 #: src/core.php:294
 #: src/frontend.php:295
 #: src/widget.php:74
-#: widget.php:74
 msgid "Unsubscribe"
 msgstr "Abmelden"
 
@@ -229,12 +227,10 @@ msgid "That email address is not subscribed."
 msgstr "Diese E-Mail Adresse ist nicht registriert."
 
 #: src/widget.php:63
-#: widget.php:63
 msgid "(Un)Subscribe to Posts"
 msgstr "An- / Abmelden für Benachtichtigungen."
 
 #: src/widget.php:94
-#: widget.php:94
 msgid "Title"
 msgstr "Titel"
 
@@ -297,7 +293,7 @@ msgid ""
 "Thank you,\n"
 "{MYNAME}."
 msgstr ""
-"{BLOGNAME} hat eine Anfrage für die Aktion "{ACTION}" für diese E-Mail Adresse erhalten. \n"
+"{BLOGNAME} hat eine Anfrage für die Aktion \"{ACTION}\" für diese E-Mail Adresse erhalten. \n"
 "Um diese Anfrage zu bestätigen, clicke auf den folgenden Link.\n"
 "\n"
 "{LINK}\n"
@@ -319,27 +315,22 @@ msgid "You have successfully subscribed!"
 msgstr "Anmeldung erfolgreich"
 
 #: src/widget.php:60
-#: widget.php:60
 msgid "Enter email address..."
 msgstr "E-Mail Adresse eingeben..."
 
 #: src/widget.php:67
-#: widget.php:67
 msgid "Leave This Blank:"
 msgstr ""
 
 #: src/widget.php:68
-#: widget.php:68
 msgid "Leave This Blank Too:"
 msgstr ""
 
 #: src/widget.php:69
-#: widget.php:69
 msgid "Do Not Change This:"
 msgstr ""
 
 #: src/widget.php:72
-#: widget.php:72
 msgid "Your email:"
 msgstr "Ihre E-Mail Adresse:"
 
@@ -356,7 +347,7 @@ msgid "the unformatted imprint link<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
 #. Plugin Name of the plugin
-#: subscribe2.php
+#: subscribe-mini.php
 #: src/admin.php:27
 msgid "Subscribe Mini"
 msgstr ""
@@ -426,24 +417,20 @@ msgstr ""
 #: src/widget.php:27
 #: src/widget.php:44
 #: src/widget.php:85
-#: widget.php:27
-#: widget.php:44
-#: widget.php:85
 msgid "Subscribe Mini Widget"
 msgstr ""
 
 #. Plugin URI of the plugin
 #. Author URI of the plugin
-#: subscribe2.php
+#: subscribe-mini.php
 msgid "https://www.livediesel.de"
 msgstr ""
 
 #. Author of the plugin
-#: subscribe2.php
+#: subscribe-mini.php
 msgid "Sven"
 msgstr ""
 
 #: src/widget.php:15
-#: widget.php:15
 msgid "Sidebar Widget for Subscribe Mini"
 msgstr ""
