@@ -46,7 +46,7 @@ class Admin extends Core
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
-    public function add_meta_boxes()
+    public function add_meta_boxes($post)
     {
         add_meta_box(
             'smini_override',
@@ -73,6 +73,21 @@ class Admin extends Core
                 '__back_compat_meta_box'             => true,
             ]
         );
+
+        if ($post->post_status === 'publish') {
+            add_meta_box(
+                'smini_resend',
+                __('Subscribe Mini Resend', SMLD),
+                array($this, 'resend_meta'),
+                'post',
+                'side',
+                'default',
+                array(
+                    '__block_editor_compatible_meta_box' => false,
+                    '__back_compat_meta_box'             => true,
+                )
+            );
+        }
     }
 
     public function override_meta($post)
@@ -90,15 +105,16 @@ class Admin extends Core
         echo ' />';
     }
 
-    /**
-     * Meta preview box code.
-     *
-     * @return void
-     */
     public function preview_meta()
     {
         echo '<p>' . esc_html__('Send preview email of this post to currently logged in user:', SMLD) . '</p>' . "\r\n";
         echo '<input class="button" name="smini_preview" type="submit" value="' . esc_attr(__('Send Preview', SMLD)) . '" />' . "\r\n";
+    }
+
+    public function resend_meta()
+    {
+        echo '<p>' . esc_html__('Resend the notification email of this post to current subscribers:', SMLD) . '</p>' . "\r\n";
+        echo '<input class="button" name="smini_resend" type="submit" value="' . esc_attr(__('Resend Notification', SMLD)) . '" />' . "\r\n";
     }
 
     public function save_post($post_id, $post)
