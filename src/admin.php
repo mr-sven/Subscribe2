@@ -28,7 +28,7 @@ class Admin
     {
         add_menu_page(__('Subscribe Mini', SMLD), __('Subscribe Mini', SMLD), apply_filters('smin_capability', 'read', 'user'), 'smini_subscribers', null, 'dashicons-buddicons-pm', 30);
         $subscribers_page = add_submenu_page('smini_subscribers', __('Subscribers', SMLD), __('Subscribers', SMLD), apply_filters('smin_capability', 'manage_options', 'manage'), 'smini_subscribers', [$this, 'subscribers_page']);
-        add_action("load-" . $subscribers_page, [$this, 'subscribers_page_options']);
+        add_action("load-" . $subscribers_page, [$this, 'subscribers_page_load']);
         add_submenu_page('smini_subscribers', __('Options', SMLD), __('Options', SMLD), apply_filters('smin_capability', 'manage_options', 'options'), static::OPTIONS_PAGE, array($this, 'options_page'));
         add_submenu_page('smini_subscribers', __('Templates', SMLD), __('Templates', SMLD), apply_filters('smin_capability', 'manage_options', 'templates'), 'smini_templates', array($this, 'templates_page'));
     }
@@ -48,11 +48,11 @@ class Admin
         register_setting(SM_SETTINGS_GROUP, SMOPTIONS, [$this, 'check_values']);
     }
 
-    public function subscribers_page_options()
+    public function subscribers_page_load()
     {
-        global $sminiTable;
-        require_once __DIR__ . '/subscribers-table.php';
-        $sminiTable = new SubscribersTable();
+        if (isset($_REQUEST['action']) && '-1' !== $_REQUEST['action']) {
+            $this->subscribers_page_action($_REQUEST['action']);
+        }
 
         $args = array(
             'label'   => __('Number of subscribers per page: ', SMLD),
@@ -63,9 +63,49 @@ class Admin
         add_screen_option('per_page', $args);
     }
 
+    public function subscribers_page_action($action)
+    {
+        global $wpdb;
+
+        if (!in_array($action, ['delete_all', 'delete', 'add'], true)) {
+            return;
+        }
+
+        if (!isset($_REQUEST['_wpnonce']) ||
+            empty($_REQUEST['_wpnonce']) ||
+            !wp_verify_nonce(sanitize_key($_REQUEST['_wpnonce']), 'bulk-subscribers')) {
+            return;
+        }
+
+        switch ($action)
+        {
+            case 'delete_all':
+                if (isset($_REQUEST['element']) && is_array($_REQUEST['element'])) {
+                    foreach ($_REQUEST['element'] as $id) {
+                        // $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
+                    }
+                }
+                break;
+
+            case 'delete':
+                // $wpdb->delete($wpdb->smini, ['id' => (int)$_REQUEST['element']]);
+                wp_redirect(admin_url('admin.php?page=smini_subscribers'));
+                break;
+
+            case 'add':
+                if (isset($_REQUEST['addresses'])) {
+                    $addresses = explode("\n", $_REQUEST['addresses']);
+                    foreach ($addresses as $address) {
+                        $wpdb->insert($wpdb->smini, ['email' => sanitize_email($address)]);
+                    }
+                }
+                break;
+        }
+    }
+
     public function subscribers_page()
     {
-        global $sminiTable;
+        require_once __DIR__ . '/subscribers-table.php';
         require_once __DIR__ . '/../pages/subscribers.php';
     }
 

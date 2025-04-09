@@ -21,39 +21,6 @@ class SubscribersTable extends \WP_List_Table
         ]);
     }
 
-    public function process_bulk_action()
-    {
-        global $wpdb;
-        $action = $this->current_action();
-
-        if (!in_array($action, ['delete_all', 'delete'], true)) {
-            return;
-        }
-
-        // security check!
-        if (isset($_POST['_wpnonce']) && !empty($_POST['_wpnonce'])) {
-            if (!wp_verify_nonce(sanitize_key($_POST['_wpnonce']), 'bulk-' . $this->_args['plural'])) {
-                echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
-                return;
-            }
-            if ($action == 'delete_all') {
-                foreach ($_POST['element'] as $id) {
-                   // $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
-                }
-            }
-        } else if (isset($_GET['_wpnonce']) && !empty($_GET['_wpnonce'])) {
-            if (!wp_verify_nonce(sanitize_key($_GET['_wpnonce']), 'delete-' . $this->_args['singular'])) {
-                echo '<div id="message" class="error"><p><strong>' . esc_html__('Error: Nonce verification failed.', SMLD) . '</strong></p></div>';
-                return;
-            }
-            if ($action == 'delete') {
-                //$wpdb->delete($wpdb->smini, ['id' => (int)$_GET['element']]);
-            }
-
-            wp_redirect(admin_url('admin.php?page=smini_subscribers'));
-        }
-    }
-
     // Get table data
     private function get_table_data($filter = 'all', $search = '')
     {
@@ -104,8 +71,6 @@ class SubscribersTable extends \WP_List_Table
     // Bind table with columns, data and all
     public function prepare_items()
     {
-        $this->process_bulk_action();
-
         $filter = (isset($_REQUEST['filter']) ? $_REQUEST['filter'] : 'all');
 
         if (isset($_POST['s'])) {
@@ -158,7 +123,7 @@ class SubscribersTable extends \WP_List_Table
     // Adding action links to column
     public function column_email($item)
     {
-        $_wpnonce = esc_attr(wp_create_nonce("delete-" . $this->_args['singular']));
+        $_wpnonce = esc_attr(wp_create_nonce("bulk-" . $this->_args['plural']));
         $actions = [
             'delete' => sprintf('<a href="?page=%s&action=%s&element=%s&_wpnonce=%s">' . __('Delete', SMLD) . '</a>', $_REQUEST['page'], 'delete', $item['id'], $_wpnonce)
         ];

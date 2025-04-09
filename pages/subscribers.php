@@ -15,6 +15,7 @@
         </div>
         <div>
             <h2><?= esc_html__('Current Subscribers', SMLD) ?></h2>
+            <?php  $sminiTable = new SMini\SubscribersTable(); ?>
             <?php $sminiTable->views(); ?>
             <?php
                 $sminiTable->prepare_items();
