@@ -30,32 +30,41 @@ class Widget extends \WP_Widget
         );
     }
 
+    public function update($new_instance, $old_instance)
+    {
+        $instance = $old_instance;
+        $instance['title'] = wp_strip_all_tags(stripslashes($new_instance['title']));
+        return $instance;
+    }
+
+    public function widget($args, $instance)
+    {
+        $title = empty($instance['title']) ? __('Subscribe Mini Widget', SMLD) : $instance['title'];
+
+        echo wp_kses_post($args['before_widget']);
+        if (! empty($title)) {
+            echo wp_kses_post($args['before_title']) . esc_attr($title) . wp_kses_post($args['after_title']);
+        }
+        echo wp_kses_post($args['after_widget']);
+    }
+
     public function form($instance)
     {
-        $options = get_option('widget_subscribeMiniWidget');
-        if (false === $options) {
-            $defaults = [
-                'title'             => __('Subscribe Mini Widget', SMLD),
-            ];
-        } else {
-            $defaults = [
-                'title'             => $options['title'],
-            ];
-            delete_option('widget_subscribeMiniWidget');
-        }
-        // Code to obtain old settings too.
-        $instance = wp_parse_args((array) $instance, $defaults);
+        $defaults = [
+            'title' => __('Subscribe Mini Widget', SMLD),
+        ];
 
-        $title             = htmlspecialchars($instance['title'], ENT_QUOTES);
-        ?>
-<div>
-    <p>
-        <label for="<?= esc_attr($this->get_field_id('title')); ?>">
-            <?= esc_html__('Title', SMLD); ?>:
-            <input class="widefat" id="<?= esc_attr($this->get_field_id('title')); ?>" name="<?= esc_attr($this->get_field_name('title')); ?>" type="text" value="<?= esc_attr($title); ?>" />
-        </label>
-    </p>
-</div>
-        <?php
+        $instance = wp_parse_args((array) $instance, $defaults);
+        $title = htmlspecialchars($instance['title'], ENT_QUOTES);
+?>
+        <div>
+            <p>
+                <label for="<?= esc_attr($this->get_field_id('title')); ?>">
+                    <?= esc_html__('Title', SMLD); ?>:
+                    <input class="widefat" id="<?= esc_attr($this->get_field_id('title')); ?>" name="<?= esc_attr($this->get_field_name('title')); ?>" type="text" value="<?= esc_attr($title); ?>" />
+                </label>
+            </p>
+        </div>
+<?php
     }
 }
