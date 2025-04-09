@@ -60,7 +60,7 @@ class Frontend extends Core
                         if ($active == null) {
                             $wpdb->insert($wpdb->smini, ['email' => sanitize_email($email)]);
                         }
-                        $status = $this->send_confirm('add');
+                        $status = $this->send_confirm('add', $email);
 
                         if ($status) {
                             return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
@@ -75,7 +75,7 @@ class Frontend extends Core
                     if ($active == null) {
                         return '<p class="smini_error">' . esc_html__('That email address is not subscribed.', SMLD) . '</p>';
                     } else {
-                        $status = $this->send_confirm('del');
+                        $status = $this->send_confirm('del', $email);
                         if ($status) {
                             return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
                         } else {
