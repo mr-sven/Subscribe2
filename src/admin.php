@@ -121,6 +121,7 @@ class Admin extends Core
     {
         $this->check_notify_meta($post_id);
         $this->check_preview($post_id, $post);
+        $this->check_resend($post);
         return $post_id;
     }
 
@@ -155,6 +156,15 @@ class Admin extends Core
             'id' => $current_user->ID,
         ];
         $this->publish($post, $recipient);
+    }
+
+    public function check_resend($post)
+    {
+        if (! isset($_POST['smini_resend'])) {
+            return;
+        }
+
+        $this->publish($post);
     }
 
     public function subscribers_page_load()
