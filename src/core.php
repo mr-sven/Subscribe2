@@ -162,7 +162,7 @@ abstract class Core
             return '<img src="' . $base64 . '" alt="" data-rel="' . $path . '"/>';
         }, $html_excerpt);
 
-        $html_excerpt_body  = str_replace("\r\n", "<br>\r\n", $mailtext);
+        $html_excerpt_body  = wpautop($mailtext);
         $html_excerpt_body  = str_replace('{POST}', $html_excerpt, $html_excerpt_body);
 
 

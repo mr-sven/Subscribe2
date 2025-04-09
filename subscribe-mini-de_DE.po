@@ -203,7 +203,7 @@ msgstr ""
 #: src/frontend.php:61
 #: src/frontend.php:75
 msgid "A confirmation message is on its way!"
-msgstr "Eine bestätigungs E-Mail wurde gesendet!"
+msgstr "Eine E-Mail Bestätigung wurde gesendet!"
 
 #: src/frontend.php:31
 msgid "Sorry, but that does not look like an email address to me."
