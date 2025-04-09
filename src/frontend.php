@@ -22,14 +22,14 @@ class Frontend extends Core
 
     public function shortcode($atts = [], $content = null, $shortcode_tag = '')
     {
+        global $wpdb;
+
         // Anti spam sign up measure.
         if (isset($_POST['subscribe']) || isset($_POST['unsubscribe'])) {
             if (! empty($_POST['firstname']) || ! empty($_POST['lastname']) || (! empty($_POST['uri']) && 'http://' !== sanitize_url($_POST['uri']))) {
                 // Looks like some invisible-to-user fields were changed; falsely report success.
                 return '<p class="smini_message">' . esc_html__('A confirmation message is on its way!', SMLD) . '</p>';
             }
-
-            global $wpdb;
 
             $email = sanitize_email($_POST['email']);
             if (false === $this->validate_email($email)) {
@@ -83,6 +83,40 @@ class Frontend extends Core
                         }
                     }
                 }
+            }
+        } elseif (isset($_GET['smini'])) {
+            $code   = $_GET['smini'];
+            $action = substr($code, 0, 1);
+            $hash   = substr($code, 1, 32);
+            $id     = intval(substr($code, 33));
+
+            if ($id) {
+                $email = sanitize_email($this->get_email($id));
+                if (! $email || wp_hash($email) !== $hash) {
+                    return '<p class="smini_error">' . esc_html__('No such email address is registered.', SMLD) . '</p>';
+                }
+            } else {
+                return '<p class="smini_error">' . esc_html__('No such email address is registered.', SMLD) . '</p>';
+            }
+
+            $active = $wpdb->get_var($wpdb->prepare("SELECT active FROM $wpdb->smini WHERE email = %s", $email));
+
+            if ('1' === $action) {
+                if ('1' !== $active) {
+                    $wpdb->update($wpdb->smini, ['active' => 1], ['id' => (int)$id]);
+                    if ('subs' === $this->options[SM_SETTING_ADMIN_EMAIL] || 'both' === $this->options[SM_SETTING_ADMIN_EMAIL]) {
+                        $this->admin_email('subscribe', $email);
+                    }
+                }
+                return '<p class="smini_message">' . __('You have successfully subscribed!', SMLD) . '</p>';
+            } elseif ('0' === $action) {
+                if ('0' !== $active) {
+                    $wpdb->delete($wpdb->smini, ['id' => (int)$id]);
+                    if ('unsubs' === $this->options[SM_SETTING_ADMIN_EMAIL] || 'both' === $this->options[SM_SETTING_ADMIN_EMAIL]) {
+                        $this->admin_email('unsubscribe', $email);
+                    }
+                }
+                return '<p class="smini_message">' . __('You have successfully unsubscribed!', SMLD) . '</p>';
             }
         }
 
@@ -277,6 +311,17 @@ class Frontend extends Core
         return $wpdb->get_var($wpdb->prepare("SELECT id FROM $wpdb->smini WHERE email=%s", $email));
     }
 
+    public function get_email($id = 0)
+    {
+        global $wpdb;
+
+        if (! $id) {
+            return false;
+        }
+
+        return $wpdb->get_var($wpdb->prepare("SELECT email FROM $wpdb->smini WHERE id=%d", $id));
+    }
+
     public function headers($type = 'text')
     {
         $myname  = html_entity_decode(get_option('blogname'), ENT_QUOTES);
@@ -316,9 +361,46 @@ class Frontend extends Core
         if (empty($string)) {
             return;
         }
-
     }
-/*
+
+    public function admin_email($action, $email)
+    {
+        if (! in_array($action, array('subscribe', 'unsubscribe'), true)) {
+            return false;
+        }
+
+        $blogname = get_option('blogname');
+        $subject  = empty($blogname) ? '[' . stripslashes(html_entity_decode($blogname, ENT_QUOTES)) . '] ' : '';
+        if ('subscribe' === $action) {
+            $subject .= __('New Subscription', 'subscribe2');
+            $message  = $email . ' ' . __('subscribed to email notifications!', 'subscribe2');
+        } elseif ('unsubscribe' === $action) {
+            $subject .= __('New Unsubscription', 'subscribe2');
+            $message  = $email . ' ' . __('unsubscribed from email notifications!', 'subscribe2');
+        }
+
+        $subject = html_entity_decode($subject, ENT_QUOTES);
+        $role    = array(
+            'fields' => array(
+                'user_email',
+            ),
+            'role'   => 'administrator',
+        );
+
+        $wp_user_query = get_users($role);
+        foreach ($wp_user_query as $user) {
+            $recipients[] = $user->user_email;
+        }
+
+        $recipients = apply_filters('s2_admin_email', $recipients, $action);
+        $headers    = $this->headers();
+
+        // Send individual emails so we don't reveal admin emails to each other.
+        foreach ($recipients as $recipient) {
+            $status = wp_mail($recipient, $subject, $message, $headers);
+        }
+    }
+    /*
     public function substitute_subscribe($string = '', $digest_post_ids = array())
     {
         if (empty($string)) {
