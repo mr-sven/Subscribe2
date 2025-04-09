@@ -36,7 +36,7 @@ abstract class Core
         register_widget(Widget::class);
     }
 
-    public function publish($post, $preview = '')
+    public function publish($post, $preview = null)
     {
         global $wpdb;
         $this->options ??= get_option(SMOPTIONS);
@@ -45,7 +45,7 @@ abstract class Core
             return $post;
         }
 
-        if (empty($preview)) {
+        if ($preview == null) {
             if ($post->post_password !== '' || $post->post_status !== 'publish') {
                 return $post;
             }
@@ -160,7 +160,7 @@ abstract class Core
         $html_excerpt_body  = str_replace('{POST}', $html_excerpt, $html_excerpt_body);
 
 
-        if (! empty($preview)) {
+        if ($preview != null) {
             $this->mail([$preview], $subject, $html_excerpt_body, 'html');
         } else {
             $recipients = $wpdb->get_results("SELECT id,email FROM $wpdb->smini WHERE active='1'") ?? [];

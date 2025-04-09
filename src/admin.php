@@ -18,7 +18,8 @@ class Admin extends Core
         parent::loaded();
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'admin_init']);
-        add_action('add_meta_boxes', [$this, 'add_meta_boxes'], 10, 2);
+        add_action('add_meta_boxes_post', [$this, 'add_meta_boxes'], 10, 2);
+        add_action('save_post_post', [$this, 'save_post']);
     }
 
     public function admin_menu()
@@ -47,10 +48,6 @@ class Admin extends Core
 
     public function add_meta_boxes($post_type, $post)
     {
-        if ($post_type !== 'post') {
-            return;
-        }
-
         add_meta_box(
             'smini_override',
             __('Subscribe Mini Notification Override', SMLD),
@@ -58,10 +55,23 @@ class Admin extends Core
             $post_type,
             'advanced',
             'default',
-            array(
+            [
                 '__block_editor_compatible_meta_box' => false,
                 '__back_compat_meta_box'             => true,
-            )
+            ]
+        );
+
+        add_meta_box(
+            'smini_preview',
+            __('Subscribe Mini Preview', SMLD),
+            [$this, 'preview_meta'],
+            $post_type,
+            'side',
+            'default',
+            [
+                '__block_editor_compatible_meta_box' => false,
+                '__back_compat_meta_box'             => true,
+            ]
         );
     }
 
@@ -78,6 +88,57 @@ class Admin extends Core
         }
 
         echo ' />';
+    }
+
+    /**
+     * Meta preview box code.
+     *
+     * @return void
+     */
+    public function preview_meta()
+    {
+        echo '<p>' . esc_html__('Send preview email of this post to currently logged in user:', SMLD) . '</p>' . "\r\n";
+        echo '<input class="button" name="smini_preview" type="submit" value="' . esc_attr(__('Send Preview', SMLD)) . '" />' . "\r\n";
+    }
+
+    public function save_post($post_id, $post)
+    {
+        $this->check_notify_meta($post_id);
+        $this->check_preview($post_id, $post);
+        return $post_id;
+    }
+
+    public function check_notify_meta($post_id)
+    {
+        if (! isset($_POST['sminimeta_nonce']) || ! wp_verify_nonce(sanitize_key($_POST['sminimeta_nonce']), wp_hash(plugin_basename(__FILE__)))) {
+            return;
+        }
+
+        if (! current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        $subscribe_meta_field = ! empty($_POST['smini_meta_field']) ? sanitize_text_field($_POST['smini_meta_field']) : 'yes';
+        if (! empty($subscribe_meta_field) && 'no' === $subscribe_meta_field) {
+            update_post_meta($post_id, '_sminimail', $subscribe_meta_field);
+        } else {
+            update_post_meta($post_id, '_sminimail', 'yes');
+        }
+    }
+
+    public function check_preview($post_id, $post)
+    {
+        if (! isset($_POST['smini_preview'])) {
+            return;
+        }
+
+        global $post, $current_user;
+
+        $recipient = (object) [
+            'email' => $current_user->user_email,
+            'id' => $current_user->ID,
+        ];
+        $this->publish($post, $recipient);
     }
 
     public function subscribers_page_load()
