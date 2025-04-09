@@ -45,6 +45,25 @@ class Widget extends \WP_Widget
         if (! empty($title)) {
             echo wp_kses_post($args['before_title']) . esc_attr($title) . wp_kses_post($args['after_title']);
         }
+        $value = __('Enter email address...', SMLD);
+?>
+        <div class="smini_widget">
+            <?= esc_html__('(Un)Subscribe to Posts', SMLD); ?>
+            <form method="post" action="<?= esc_url(admin_url('admin-post.php')); ?>">
+                <input type="hidden" name="ip" value="<?= esc_attr($_SERVER['REMOTE_ADDR']) ?>" />
+                <span style="display:none !important">
+                    <label for="firstname"><?=__( 'Leave This Blank:', SMLD)?></label><input type="text" id="firstname" name="firstname" />
+                    <label for="lastname"><?=__( 'Leave This Blank Too:', SMLD)?></label><input type="text" id="lastname" name="lastname" />
+                    <label for="uri"><?=__( 'Do Not Change This:', SMLD)?></label><input type="text" id="uri" name="uri" value="http://" />
+                </span>
+                <p>
+                    <label for="s2email"><?= esc_html__('Your email:', SMLD) ?></label><br>
+                    <input type="email" name="email" id="s2email" value="<?= esc_attr($value) ?>" onfocus="if (this.value === '<?= $value ?>') {this.value = '';}" onblur="if (this.value === '') {this.value = '<?= $value ?>';}" />
+                    <input type="submit" name="subscribe" value="<?=esc_html__( 'Subscribe', SMLD)?>" />&nbsp;<input type="submit" name="unsubscribe" value="<?=esc_html__( 'Unsubscribe', SMLD)?>" />
+                </p>
+            </form>
+        </div>
+<?php
         echo wp_kses_post($args['after_widget']);
     }
 
@@ -56,7 +75,7 @@ class Widget extends \WP_Widget
 
         $instance = wp_parse_args((array) $instance, $defaults);
         $title = htmlspecialchars($instance['title'], ENT_QUOTES);
-?>
+    ?>
         <div>
             <p>
                 <label for="<?= esc_attr($this->get_field_id('title')); ?>">
