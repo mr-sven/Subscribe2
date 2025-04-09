@@ -65,7 +65,8 @@ if (is_admin())
 }
 else
 {
-
+	require_once __DIR__ . "/src/frontend.php";
+	new SMini\Frontend();
 }
 
 
