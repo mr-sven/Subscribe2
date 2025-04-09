@@ -19,7 +19,7 @@ class Admin extends Core
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'admin_init']);
         add_action('add_meta_boxes_post', [$this, 'add_meta_boxes']);
-        add_action('save_post_post', [$this, 'save_post']);
+        add_action('save_post_post', [$this, 'save_post'], 10, 2);
     }
 
     public function admin_menu()
