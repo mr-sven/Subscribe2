@@ -96,7 +96,7 @@ class Admin
                 if (isset($_REQUEST['addresses'])) {
                     $addresses = explode("\n", $_REQUEST['addresses']);
                     foreach ($addresses as $address) {
-                        $wpdb->insert($wpdb->smini, ['email' => sanitize_email($address)]);
+                        $wpdb->insert($wpdb->smini, ['email' => sanitize_email($address), 'active' => 1, 'active_ts' => current_time('mysql')]);
                     }
                 }
                 break;
