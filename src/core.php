@@ -19,6 +19,12 @@ abstract class Core
     {
         Setup::prepare();
         add_action('plugins_loaded', [$this, 'loaded']);
+        add_action('init', [$this, 'load_translations']);
+    }
+
+    public function load_translations()
+    {
+        load_plugin_textdomain('subscribe-mini', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
     public function loaded()
