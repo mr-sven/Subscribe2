@@ -321,7 +321,7 @@ class Admin extends Core
 
             $this->publish($preview_post, $recipient);
 
-            echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', 'subscribe2') . '</strong></p></div>';
+            echo '<div id="message" class="updated fade"><p><strong>' . esc_html__('Preview message(s) sent to logged in user', SMLD) . '</strong></p></div>';
         }
         require_once __DIR__ . '/../pages/templates.php';
     }
@@ -363,18 +363,20 @@ class Admin extends Core
                 $new_input[$key] = $this->options[$key];
             }
 
-            if (in_array($key, $num_settings, true)) {
-                // Numerical inputs fixed for old option names.
-                if (is_numeric($input[$key]) && intval($input[$key]) >= 0) {
-                    $new_input[$key] = intval($input[$key]);
-                }
-            } elseif (in_array($key, $textarea_settings, true)) {
-                if (isset($input[$key])) {
-                    $new_input[$key] = sanitize_textarea_field($input[$key]);
-                }
-            } elseif (in_array($key, $textbox_settings, true)) {
-                if (isset($input[$key])) {
-                    $new_input[$key] = sanitize_text_field($input[$key]);
+            if (isset($input[$key])) {
+                if (in_array($key, $num_settings, true)) {
+                    // Numerical inputs fixed for old option names.
+                    if (is_numeric($input[$key]) && intval($input[$key]) >= 0) {
+                        $new_input[$key] = intval($input[$key]);
+                    }
+                } elseif (in_array($key, $textarea_settings, true)) {
+                    if (isset($input[$key])) {
+                        $new_input[$key] = sanitize_textarea_field($input[$key]);
+                    }
+                } elseif (in_array($key, $textbox_settings, true)) {
+                    if (isset($input[$key])) {
+                        $new_input[$key] = sanitize_text_field($input[$key]);
+                    }
                 }
             }
         }
