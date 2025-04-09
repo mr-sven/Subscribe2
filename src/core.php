@@ -171,7 +171,7 @@ abstract class Core
     public function create_excerpt($text, $html = false)
     {
         $excerpt = (false === $html) ? trim(wp_strip_all_tags(strip_shortcodes($text))) : strip_shortcodes($text);
-        $words = preg_split('//u', $excerpt, 56);
+        $words = explode(' ', $excerpt, 56);
 
         if (count($words) > 55) {
             array_pop($words);
@@ -288,7 +288,7 @@ abstract class Core
         if ($this->options[SM_SETTING_SUB_PAGE] > 0) {
 
             $page_url  = get_page_link($this->options[SM_SETTING_SUB_PAGE]);
-            $page_url = add_query_arg('smini', "0".wp_hash($email).$id, $page_url);
+            $page_url = add_query_arg('smini', "0" . wp_hash($email) . $id, $page_url);
 
             if ($type == 'html') {
                 $page_url = '<a href="' . $page_url . '">' . __('Unsubscribe', SMLD) . '</a>';
