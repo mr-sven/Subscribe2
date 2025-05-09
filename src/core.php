@@ -210,7 +210,7 @@ abstract class Core
 
             $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/style.css');
             $style = $minifier->minify();
-            $mailtext = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><title>' . $subject . '</title><style>' . $style . '</style><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>' . $message . '</body></html>';
+            $mailtext = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head><title>' . $subject . '</title><style>' . $style . '</style><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div id="content" class="site-content"><main id="main" class="site-main" role="main">' . $message . '</main></div></body></html>';
         } else {
             $headers = $this->headers('text');
 
@@ -229,9 +229,9 @@ abstract class Core
             }
 
             // Parse unsubscribe shortcode.
-            $mailtext = $this->parse_unsubscribe_link($mailtext, $email, $recipient->id, $type);
+            $mailtextOut = $this->parse_unsubscribe_link($mailtext, $email, $recipient->id, $type);
 
-            $status = wp_mail($email, $subject, $mailtext, $headers, $attachments);
+            $status = wp_mail($email, $subject, $mailtextOut, $headers, $attachments);
         }
     }
 
