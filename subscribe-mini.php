@@ -8,6 +8,7 @@ Author: Sven
 Author URI: https://www.livediesel.de
 Licence: GPLv3
 Text Domain: subscribe-mini
+Domain Path: /languages
 */
 
 /*
@@ -43,7 +44,6 @@ if ( function_exists( 'set_time_limit' ) ) {
 }
 
 // define language domain
-//define(''subscribe-mini'', 'subscribe-mini');
 define('SMOPTIONS', 'smini_options');
 define('SMPLUGINDIR', dirname(plugin_basename(__FILE__)));
 
