@@ -173,7 +173,7 @@ msgstr ""
 msgid "Subscribe"
 msgstr "Anmelden"
 
-#: src/core.php:294
+#: src/core.php:250
 #: src/frontend.php:295
 #: src/widget.php:74
 msgid "Unsubscribe"
@@ -380,7 +380,7 @@ msgstr ""
 msgid "&mdash; select &mdash;"
 msgstr ""
 
-#: src/core.php:71
+#: src/core.php:77
 #: src/frontend.php:278
 msgid "Imprint / Dataprotection"
 msgstr "Impressum / Datenschutz"
