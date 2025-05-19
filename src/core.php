@@ -228,8 +228,20 @@ abstract class Core
                 continue;
             }
 
-            // Parse unsubscribe shortcode.
-            $mailtextOut = $this->parse_unsubscribe_link($mailtext, $email, $recipient->id, $type);
+            $unsubscribe_url = $this->get_unsubscribe_url($email, $recipient->id);
+            if (!empty($unsubscribe_url)) {
+                $headers['List-Unsubscribe'] = '<' . $unsubscribe_url . '>';
+
+                if ($type == 'html') {
+                    $unsubscribe_url = '<a href="' . $unsubscribe_url . '">' . __('Unsubscribe', 'subscribe-mini') . '</a>';
+                }
+
+                $mailtextOut = str_replace('{UNSUBLINK}', $unsubscribe_url, $mailtext);
+            }
+            else {
+                unset($headers['List-Unsubscribe']);
+                $mailtextOut = str_replace('{UNSUBLINK}', '', $mailtext);
+            }
 
             $status = wp_mail($email, $subject, $mailtextOut, $headers, $attachments);
         }
@@ -289,20 +301,13 @@ abstract class Core
         return 'text/plain';
     }
 
-    public function parse_unsubscribe_link($content, $email, $id, $type)
-    {
+    public function get_unsubscribe_url($email, $id) {
+
         if ($this->options[SM_SETTING_SUB_PAGE] > 0) {
-
-            $page_url  = get_page_link($this->options[SM_SETTING_SUB_PAGE]);
+            $page_url = get_page_link($this->options[SM_SETTING_SUB_PAGE]);
             $page_url = add_query_arg('smini', "0" . wp_hash($email) . $id, $page_url);
-
-            if ($type == 'html') {
-                $page_url = '<a href="' . $page_url . '">' . __('Unsubscribe', 'subscribe-mini') . '</a>';
-            }
-
-            return str_replace('{UNSUBLINK}', $page_url, $content);
-        } else {
-            return str_replace('{UNSUBLINK}', '', $content);
+            return $page_url;
         }
+        return "";
     }
 }
