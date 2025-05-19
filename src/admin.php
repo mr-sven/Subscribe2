@@ -234,7 +234,7 @@ class Admin extends Core
         add_settings_section(static::OPTIONS_SECTION, '', null, static::OPTIONS_PAGE);
         add_settings_field(
             SM_SETTING_ADMIN_EMAIL,
-            __('Send Admins notifications for new', 'subscribe-mini'),
+            __('Send Admins notifications for new: ', 'subscribe-mini'),
             [$this, 'create_radio'],
             static::OPTIONS_PAGE,
             static::OPTIONS_SECTION,
