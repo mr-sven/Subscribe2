@@ -44,40 +44,40 @@ msgstr ""
 
 #: src/admin.php:31
 msgid "Templates"
-msgstr ""
+msgstr "Vorlagen"
 
 #: src/admin.php:237
-msgid "Send Admins notifications for new"
-msgstr ""
+msgid "Send Admins notifications for new: "
+msgstr "Benachrichtige Admin bei: "
 
 #: src/admin.php:248
 msgid "Subscriptions"
-msgstr ""
+msgstr "Registierung"
 
 #: src/admin.php:252
 msgid "Unsubscriptions"
-msgstr ""
+msgstr "Abmeldung"
 
 #: src/admin.php:256
 msgid "Both"
-msgstr ""
+msgstr "Beiden"
 
 #: src/admin.php:260
 msgid "Neither"
-msgstr ""
+msgstr "Keinen"
 
 #: pages/templates.php:10
 #: pages/templates.php:17
 msgid "Subject Line"
-msgstr ""
+msgstr "Betreff Zeile"
 
 #: pages/templates.php:26
 msgid "Message substitutions"
-msgstr ""
+msgstr "Nachricht Ersezungen"
 
 #: pages/templates.php:28
 msgid "IF THE FOLLOWING KEYWORDS ARE ALSO IN YOUR POST THEY WILL BE SUBSTITUTED"
-msgstr ""
+msgstr "Wenn die folgenden Schlüsselwörter im Post enthalten sind, werden diese ebenfalls ersetzt."
 
 #: pages/templates.php:35
 msgid "the post's title<br>(<i>for per-post emails only</i>)"
@@ -193,11 +193,11 @@ msgstr ""
 
 #: src/admin.php:110
 msgid "Send preview email of this post to currently logged in user:"
-msgstr ""
+msgstr "Sende vorschau an alle angemeldeten Benutzer."
 
 #: src/admin.php:116
 msgid "Resend the notification email of this post to current subscribers:"
-msgstr ""
+msgstr "Sende Benachrichtigung an alle Abonnenten."
 
 #: src/frontend.php:26
 #: src/frontend.php:61
@@ -354,19 +354,19 @@ msgstr ""
 
 #: src/admin.php:30
 msgid "Options"
-msgstr ""
+msgstr "Einstellungen"
 
 #: src/admin.php:53
 msgid "Subscribe Mini Notification Override"
-msgstr ""
+msgstr "Subscribe Mini Benachrichtigung"
 
 #: src/admin.php:66
 msgid "Subscribe Mini Preview"
-msgstr ""
+msgstr "Subscribe Mini Vorschau"
 
 #: src/admin.php:80
 msgid "Subscribe Mini Resend"
-msgstr ""
+msgstr "Subscribe Mini neu senden"
 
 #: src/admin.php:267
 msgid "Set default Subscribe Mini page as"
@@ -391,28 +391,28 @@ msgstr "Sie haben sich erfolgreich abgemeldet!"
 
 #: src/subscribers-table.php:53
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: src/subscribers-table.php:54
 #: src/subscribers-table.php:65
 msgid "Active"
-msgstr ""
+msgstr "Aktiv"
 
 #: src/subscribers-table.php:55
 msgid "Not active"
-msgstr ""
+msgstr "Nicht aktiv"
 
 #: src/subscribers-table.php:64
 msgid "EMail"
-msgstr ""
+msgstr "E-Mail"
 
 #: src/subscribers-table.php:66
 msgid "Date registered"
-msgstr ""
+msgstr "Datum registriert"
 
 #: src/subscribers-table.php:67
 msgid "Date activated"
-msgstr ""
+msgstr "Datum aktiviert"
 
 #: src/widget.php:27
 #: src/widget.php:44
