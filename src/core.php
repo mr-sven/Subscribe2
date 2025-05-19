@@ -275,9 +275,6 @@ abstract class Core
             $headers[$key] = $key . ': ' . $value;
         }
 
-        $headers  = implode("\n", $headers);
-        $headers .= "\n";
-
         return $headers;
     }
 
