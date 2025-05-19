@@ -230,7 +230,7 @@ abstract class Core
 
             $unsubscribe_url = $this->get_unsubscribe_url($email, $recipient->id);
             if (!empty($unsubscribe_url)) {
-                $headers['List-Unsubscribe'] = '<' . $unsubscribe_url . '>';
+                $headers['List-Unsubscribe'] = 'List-Unsubscribe: <' . $unsubscribe_url . '>';
 
                 if ($type == 'html') {
                     $unsubscribe_url = '<a href="' . $unsubscribe_url . '">' . __('Unsubscribe', 'subscribe-mini') . '</a>';
