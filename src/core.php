@@ -264,7 +264,11 @@ abstract class Core
     public function headers($type = 'text')
     {
         $myname  = html_entity_decode(get_option('blogname'), ENT_QUOTES);
-        $myemail = get_option('admin_email');
+
+        $myemail = $this->options[SM_SETTING_REPLY_EMAIL];
+        if (empty($myemail)) {
+            $myemail = get_option('admin_email');
+        }
 
         $char_set = get_option('blog_charset');
         if (function_exists('mb_encode_mimeheader')) {
