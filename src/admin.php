@@ -372,7 +372,9 @@ class Admin extends Core
             SM_SETTING_MAILHEADER,
             SM_SETTING_CONFIRMHEADER,
             SM_SETTING_ADMIN_EMAIL,
-            SM_SETTING_REPLY_EMAIL,
+            SM_SETTING_REPLY_EMAIL
+        ];
+        $textbox_html_settings = [
             SM_SETTING_MAIL_CONTAINER
         ];
 
@@ -394,6 +396,23 @@ class Admin extends Core
                 } elseif (in_array($key, $textbox_settings, true)) {
                     if (isset($input[$key])) {
                         $new_input[$key] = sanitize_text_field($input[$key]);
+                    }
+                } elseif (in_array($key, $textbox_html_settings, true)) {
+                    if (isset($input[$key])) {
+                        $new_input[$key] = wp_kses($input[$key], [
+                            'div' => [
+                                'class' => [],
+                                'style' => [],
+                            ],
+                            'p' => [
+                                'class' => [],
+                                'style' => [],
+                            ],
+                            'span' => [
+                                'class' => [],
+                                'style' => [],
+                            ],
+                        ]);
                     }
                 }
             }
