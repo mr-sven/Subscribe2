@@ -19,6 +19,11 @@
                     <textarea rows="9" cols="60" name="<?= SMOPTIONS . '[' . SM_SETTING_CONFIRMTEXT . ']'?>" style="width:95%;"><?= esc_textarea(stripslashes($this->options[SM_SETTING_CONFIRMTEXT])) ?></textarea>
                     <br>
                     <br>
+                    <br>
+                    <?= esc_html__('Mail Post Container', 'subscribe-mini') ?>:
+                    <input type="text" name="<?= SMOPTIONS . '[' . SM_SETTING_MAIL_CONTAINER . ']'?>" value="<?= esc_attr($this->options[SM_SETTING_MAIL_CONTAINER]) ?>" size="45" /><br>
+                    <br>
+                    <br>
                     <?php submit_button(); ?>
                 </form>
             </td>

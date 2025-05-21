@@ -208,6 +208,11 @@ abstract class Core
             remove_all_filters('wp_mail_content_type');
             add_filter('wp_mail_content_type', [$this, 'html_email']);
 
+            $mailContainer = $this->options[SM_SETTING_MAIL_CONTAINER];
+            if (!empty($mailContainer) && stripos($mailContainer, '{}') !== false) {
+                $message = str_replace('{}', $message, $mailContainer);
+            }
+
             $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/style.css');
             $style = $minifier->minify();
             $mailtext = <<<EOT
