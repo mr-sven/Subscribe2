@@ -213,20 +213,28 @@ abstract class Core
                 $message = str_replace('{}', $message, $mailContainer);
             }
 
-            $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/style.css');
-            $style = $minifier->minify();
+            $style = '';
+            if (file_exists(get_stylesheet_directory() . '/style.css')) {
+                $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/style.css');
+                $style = $minifier->minify();
+            }
+            if (file_exists(get_stylesheet_directory() . '/mail.css')) {
+                $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/mail.css');
+                $style .= $minifier->minify();
+            }
+
             $mailtext = <<<EOT
-            <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-            <html>
+            <!DOCTYPE html>
+            <html lang="de">
               <head>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta charset="UTF-8"/>
                 <title>{$subject}</title>
                 <style>{$style}</style>
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
               </head>
               <body>
-
-                    {$message}
-
+                {$message}
               </body>
             </html>
             EOT;
