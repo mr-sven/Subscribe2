@@ -350,7 +350,8 @@ class Admin extends Core
             SM_SETTING_MAILTEXT,
             SM_SETTING_MAILHEADER,
             SM_SETTING_CONFIRMTEXT,
-            SM_SETTING_CONFIRMHEADER
+            SM_SETTING_CONFIRMHEADER,
+            SM_SETTING_REPLY_EMAIL
         ];
 
         $num_settings = [
@@ -367,7 +368,8 @@ class Admin extends Core
         $textbox_settings = [
             SM_SETTING_MAILHEADER,
             SM_SETTING_CONFIRMHEADER,
-            SM_SETTING_ADMIN_EMAIL
+            SM_SETTING_ADMIN_EMAIL,
+            SM_SETTING_REPLY_EMAIL
         ];
 
         foreach ($all_settings as $key) {
