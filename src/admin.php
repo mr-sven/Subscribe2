@@ -263,6 +263,18 @@ class Admin extends Core
             ]
         );
         add_settings_field(
+            SM_SETTING_REPLY_EMAIL,
+            __('Set default sender address', 'subscribe-mini'),
+            [$this, 'create_textbox'],
+            static::OPTIONS_PAGE,
+            static::OPTIONS_SECTION,
+            [
+                'label_for' => SMOPTIONS . '[' . SM_SETTING_REPLY_EMAIL . ']',
+                'key' => SM_SETTING_REPLY_EMAIL,
+                'class' => SM_SETTING_REPLY_EMAIL
+            ]
+        );
+        add_settings_field(
             SM_SETTING_SUB_PAGE,
             __('Set default Subscribe Mini page as', 'subscribe-mini'),
             [$this, 'create_page_dropdown'],
@@ -401,6 +413,11 @@ class Admin extends Core
         }
 
         echo '</fieldset>';
+    }
+
+    public function create_textbox($args)
+    {
+        echo '<input type="text "name="' . $args['label_for'] . '" id="' . $args['label_for'] . '" value="' . esc_attr( $this->options[$args['key']] ) . '" size="45" />';
     }
 
     public function create_page_dropdown($args)
