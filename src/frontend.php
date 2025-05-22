@@ -297,7 +297,7 @@ class Frontend extends Core
 
         $message = str_replace($codes, $replaces, stripslashes($this->options[SM_SETTING_CONFIRMTEXT]));
         $subject = str_replace($codes, $replaces, $this->options[SM_SETTING_CONFIRMHEADER]);
-
+        $message = wpautop($message);
         list($subject, $message, $headers) = $this->prepare_mail($subject, $message, 'html');
 
         return wp_mail($email, $subject, $message, $headers);
