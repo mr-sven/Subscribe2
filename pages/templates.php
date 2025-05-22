@@ -13,10 +13,16 @@
                     <textarea rows="9" cols="60" name="<?= SMOPTIONS . '[' . SM_SETTING_MAILTEXT . ']'?>" style="width:95%;"><?= esc_textarea(stripslashes($this->options[SM_SETTING_MAILTEXT])) ?></textarea>
                     <br>
                     <br>
-                    <h3><?= esc_html__('Subscribe / Unsubscribe confirmation email', 'subscribe-mini') ?></h3>
+                    <h3><?= esc_html__('Subscribe confirmation email', 'subscribe-mini') ?></h3>
                     <?= esc_html__('Subject Line', 'subscribe-mini') ?>:
                     <input type="text" name="<?= SMOPTIONS . '[' . SM_SETTING_CONFIRMHEADER . ']'?>" value="<?= esc_attr($this->options[SM_SETTING_CONFIRMHEADER]) ?>" size="45" /><br>
                     <textarea rows="9" cols="60" name="<?= SMOPTIONS . '[' . SM_SETTING_CONFIRMTEXT . ']'?>" style="width:95%;"><?= esc_textarea(stripslashes($this->options[SM_SETTING_CONFIRMTEXT])) ?></textarea>
+                    <br>
+                    <br>
+                    <h3><?= esc_html__('Unsubscribe confirmation email', 'subscribe-mini') ?></h3>
+                    <?= esc_html__('Subject Line', 'subscribe-mini') ?>:
+                    <input type="text" name="<?= SMOPTIONS . '[' . SM_SETTING_UNCONFIRMHEADER . ']'?>" value="<?= esc_attr($this->options[SM_SETTING_UNCONFIRMHEADER]) ?>" size="45" /><br>
+                    <textarea rows="9" cols="60" name="<?= SMOPTIONS . '[' . SM_SETTING_UNCONFIRMTEXT . ']'?>" style="width:95%;"><?= esc_textarea(stripslashes($this->options[SM_SETTING_UNCONFIRMTEXT])) ?></textarea>
                     <br>
                     <br>
                     <br>

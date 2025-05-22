@@ -42,6 +42,8 @@ class Admin extends Core
             SM_SETTING_MAILHEADER => '[{BLOGNAME}] {TITLE}',
             SM_SETTING_CONFIRMTEXT => __("{BLOGNAME} has received a request to {ACTION} for this email address. To complete your request please click on the link below:\n\n{LINK}\n\nIf you did not request this, please feel free to disregard this notice!\n\nThank you,\n{MYNAME}.", 'subscribe-mini'),
             SM_SETTING_CONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', 'subscribe-mini'),
+            SM_SETTING_UNCONFIRMTEXT => __("{BLOGNAME} has received a request to {ACTION} for this email address. To complete your request please click on the link below:\n\n{LINK}\n\nIf you did not request this, please feel free to disregard this notice!\n\nThank you,\n{MYNAME}.", 'subscribe-mini'),
+            SM_SETTING_UNCONFIRMHEADER => '[{BLOGNAME}] ' . __('Please confirm your request', 'subscribe-mini'),
             SM_SETTING_REPLY_EMAIL => get_option('admin_email'),
             SM_SETTING_MAIL_CONTAINER => '<div class="mail">{}</div>',
         ]);
@@ -356,6 +358,8 @@ class Admin extends Core
             SM_SETTING_MAILHEADER,
             SM_SETTING_CONFIRMTEXT,
             SM_SETTING_CONFIRMHEADER,
+            SM_SETTING_UNCONFIRMTEXT,
+            SM_SETTING_UNCONFIRMHEADER,
             SM_SETTING_REPLY_EMAIL,
             SM_SETTING_MAIL_CONTAINER
         ];
@@ -368,12 +372,14 @@ class Admin extends Core
         $textarea_settings = [
             SM_SETTING_BARRED,
             SM_SETTING_MAILTEXT,
-            SM_SETTING_CONFIRMTEXT
+            SM_SETTING_CONFIRMTEXT,
+            SM_SETTING_UNCONFIRMTEXT
         ];
 
         $textbox_settings = [
             SM_SETTING_MAILHEADER,
             SM_SETTING_CONFIRMHEADER,
+            SM_SETTING_UNCONFIRMHEADER,
             SM_SETTING_ADMIN_EMAIL,
             SM_SETTING_REPLY_EMAIL
         ];

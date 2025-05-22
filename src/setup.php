@@ -16,6 +16,8 @@ define('SM_SETTING_CONFIRMTEXT', 'confirm_text');
 define('SM_SETTING_CONFIRMHEADER', 'confirm_header');
 define('SM_SETTING_REPLY_EMAIL', 'reply_email');
 define('SM_SETTING_MAIL_CONTAINER', 'mail_container');
+define('SM_SETTING_UNCONFIRMTEXT', 'unconfirm_text');
+define('SM_SETTING_UNCONFIRMHEADER', 'unconfirm_header');
 
 class Setup
 {

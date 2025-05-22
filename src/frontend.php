@@ -273,6 +273,7 @@ class Frontend extends Core
             $imprinturl = get_option('home');
         }
         $imprintlink = '<a href="' . $imprinturl . '">' . esc_html__('Imprint / Dataprotection', 'subscribe-mini') . '</a>';
+        $link = '<a href="' . $link . '">' . $link . '</a>';
 
         $codes = [
             '{BLOGNAME}',
@@ -295,8 +296,16 @@ class Frontend extends Core
             $imprinturl,
         ];
 
-        $message = str_replace($codes, $replaces, stripslashes($this->options[SM_SETTING_CONFIRMTEXT]));
-        $subject = str_replace($codes, $replaces, $this->options[SM_SETTING_CONFIRMHEADER]);
+        if ($action === 'add') {
+            $message = $this->options[SM_SETTING_CONFIRMTEXT];
+            $subject = $this->options[SM_SETTING_CONFIRMHEADER];
+        } else {
+            $message = $this->options[SM_SETTING_UNCONFIRMTEXT];
+            $subject = $this->options[SM_SETTING_UNCONFIRMHEADER];
+        }
+
+        $message = str_replace($codes, $replaces, stripslashes($message));
+        $subject = str_replace($codes, $replaces, $subject);
         $message = wpautop($message);
         list($subject, $message, $headers) = $this->prepare_mail($subject, $message, 'html');
 
