@@ -267,9 +267,6 @@ class Frontend extends Core
 
         $link = add_query_arg('smini', $param, $link);
 
-        // Sort the headers now so we have all substitute information.
-        $mailheaders = $this->headers();
-
         if ($this->options[SM_SETTING_IMPRINT_PAGE] > 0) {
             $imprinturl = get_permalink($this->options[SM_SETTING_IMPRINT_PAGE]);
         } else {
@@ -298,12 +295,12 @@ class Frontend extends Core
             $imprinturl,
         ];
 
-        $body = str_replace($codes, $replaces, stripslashes($this->options[SM_SETTING_CONFIRMTEXT]));
+        $message = str_replace($codes, $replaces, stripslashes($this->options[SM_SETTING_CONFIRMTEXT]));
         $subject = str_replace($codes, $replaces, $this->options[SM_SETTING_CONFIRMHEADER]);
 
-        $subject = html_entity_decode($subject, ENT_QUOTES);
+        list($subject, $message, $headers) = $this->prepare_mail($subject, $message, 'html');
 
-        return wp_mail($email, $subject, $body, $mailheaders);
+        return wp_mail($email, $subject, $message, $headers);
     }
 
     public function get_id($email = '')

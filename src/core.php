@@ -193,12 +193,8 @@ abstract class Core
         return $excerpt;
     }
 
-    public function mail($recipients = [], $subject = '', $message = '', $type = 'text', $attachments = [])
+    public function prepare_mail($subject = '', $message = '', $type = 'text')
     {
-        if (empty($recipients) || empty($message)) {
-            return;
-        }
-
         // Replace any escaped html symbols in subject then apply filter.
         $subject = wp_strip_all_tags(html_entity_decode($subject, ENT_QUOTES));
 
@@ -246,6 +242,66 @@ abstract class Core
 
             $mailtext  = wp_strip_all_tags(html_entity_decode($message, ENT_NOQUOTES));
         }
+
+        return [$subject, $mailtext, $headers];
+    }
+
+    public function mail($recipients = [], $subject = '', $message = '', $type = 'text', $attachments = [])
+    {
+        if (empty($recipients) || empty($message)) {
+            return;
+        }
+
+
+        list($subject, $mailtext, $headers) = $this->prepare_mail($subject, $message, $type);
+/*
+        // Replace any escaped html symbols in subject then apply filter.
+        $subject = wp_strip_all_tags(html_entity_decode($subject, ENT_QUOTES));
+
+        if ('html' === $type) {
+            $headers = $this->headers('html');
+
+            remove_all_filters('wp_mail_content_type');
+            add_filter('wp_mail_content_type', [$this, 'html_email']);
+
+            $mailContainer = $this->options[SM_SETTING_MAIL_CONTAINER];
+            if (!empty($mailContainer) && stripos($mailContainer, '{}') !== false) {
+                $message = str_replace('{}', $message, $mailContainer);
+            }
+
+            $style = '';
+            if (file_exists(get_stylesheet_directory() . '/style.css')) {
+                $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/style.css');
+                $style = $minifier->minify();
+            }
+            if (file_exists(get_stylesheet_directory() . '/mail.css')) {
+                $minifier = new \MatthiasMullie\Minify\CSS(get_stylesheet_directory() . '/mail.css');
+                $style .= $minifier->minify();
+            }
+
+            $mailtext = <<<EOT
+            <!DOCTYPE html>
+            <html lang="de">
+              <head>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta charset="UTF-8"/>
+                <title>{$subject}</title>
+                <style>{$style}</style>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+              </head>
+              <body>
+                {$message}
+              </body>
+            </html>
+            EOT;
+        } else {
+            $headers = $this->headers('text');
+
+            remove_all_filters('wp_mail_content_type');
+            add_filter('wp_mail_content_type', [$this, 'plain_email']);
+
+            $mailtext  = wp_strip_all_tags(html_entity_decode($message, ENT_NOQUOTES));
+        }*/
 
         foreach ($recipients as $recipient) {
             $email = trim($recipient->email);
