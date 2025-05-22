@@ -260,7 +260,7 @@ abstract class Core
                 $headers['List-Unsubscribe'] = 'List-Unsubscribe: <' . $unsubscribe_url . '>';
 
                 if ($type == 'html') {
-                    $unsubscribe_url = '<a href="' . $unsubscribe_url . '">' . __('Unsubscribe', 'subscribe-mini') . '</a>';
+                    $unsubscribe_url = '<a href="' . $unsubscribe_url . '">' . __('unsubscribe', 'subscribe-mini') . '</a>';
                 }
 
                 $mailtextOut = str_replace('{UNSUBLINK}', $unsubscribe_url, $mailtext);

@@ -174,6 +174,9 @@ class Admin extends Core
         if (isset($_REQUEST['action']) && '-1' !== $_REQUEST['action']) {
             $this->subscribers_page_action($_REQUEST['action']);
         }
+        if (isset($_REQUEST['single_action_add'])) {
+            $this->subscribers_page_action('add');
+        }
 
         $args = array(
             'label'   => __('Number of subscribers per page: ', 'subscribe-mini'),

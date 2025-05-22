@@ -3,12 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Subscribe Mini 1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/subscribe2\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-19T13:39:39+02:00\n"
+"POT-Creation-Date: 2025-05-22T10:57:08+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: subscribe-mini\n"
@@ -35,21 +36,21 @@ msgstr ""
 msgid "Sven"
 msgstr ""
 
-#: pages/subscribers.php:7
+#: pages/subscribers.php:6
 msgid "Add Subscribers"
 msgstr ""
 
-#: pages/subscribers.php:9
+#: pages/subscribers.php:8
 msgid "Enter addresses, one per line or comma-separated"
 msgstr ""
 
-#: pages/subscribers.php:13
+#: pages/subscribers.php:12
 #: src/frontend.php:295
 #: src/widget.php:74
 msgid "Subscribe"
 msgstr ""
 
-#: pages/subscribers.php:17
+#: pages/subscribers.php:16
 msgid "Current Subscribers"
 msgstr ""
 
@@ -66,87 +67,91 @@ msgstr ""
 msgid "Subscribe / Unsubscribe confirmation email"
 msgstr ""
 
-#: pages/templates.php:26
+#: pages/templates.php:23
+msgid "Mail Post Container"
+msgstr ""
+
+#: pages/templates.php:31
 msgid "Message substitutions"
 msgstr ""
 
-#: pages/templates.php:28
+#: pages/templates.php:33
 msgid "IF THE FOLLOWING KEYWORDS ARE ALSO IN YOUR POST THEY WILL BE SUBSTITUTED"
 msgstr ""
 
-#: pages/templates.php:35
+#: pages/templates.php:40
 msgid "the post's title<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:37
+#: pages/templates.php:42
 msgid "the post's unformatted title <br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:39
+#: pages/templates.php:44
 msgid "the excerpt or the entire post<br>(<i>based on the subscriber's preferences</i>)"
 msgstr ""
 
-#: pages/templates.php:41
+#: pages/templates.php:46
 msgid "the excerpt of the post and the time it was posted<br>(<i>for digest emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:43
+#: pages/templates.php:48
 msgid "a list of post titles<br>(<i>for digest emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:45
+#: pages/templates.php:50
 msgid "a list of post titles followed by links to the articles<br>(<i>for digest emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:47
+#: pages/templates.php:52
 msgid "a reference style list of links at the end of the email with corresponding numbers in the content<br>(<i>for the full content plain text per-post email only</i>)"
 msgstr ""
 
-#: pages/templates.php:49
+#: pages/templates.php:54
 msgid "the post's permalink<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:51
+#: pages/templates.php:56
 msgid "the post's unformatted permalink<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:53
+#: pages/templates.php:58
 msgid "the imprint link<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:55
+#: pages/templates.php:60
 msgid "the unformatted imprint link<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:57
+#: pages/templates.php:62
 msgid "the date the post was made<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:59
+#: pages/templates.php:64
 msgid "the time the post was made<br>(<i>for per-post emails only</i>)"
 msgstr ""
 
-#: pages/templates.php:61
+#: pages/templates.php:66
 msgid "the admin or post author's name"
 msgstr ""
 
-#: pages/templates.php:63
+#: pages/templates.php:68
 msgid "the admin or post author's email"
 msgstr ""
 
-#: pages/templates.php:65
+#: pages/templates.php:70
 msgid "the post author's name"
 msgstr ""
 
-#: pages/templates.php:67
+#: pages/templates.php:72
 msgid "the generated link to confirm a request<br>(<i>only used in the confirmation email template</i>)"
 msgstr ""
 
-#: pages/templates.php:69
+#: pages/templates.php:74
 msgid "a generated unsubscribe link<br>(<i>only used in the email notification template</i>)"
 msgstr ""
 
-#: pages/templates.php:71
+#: pages/templates.php:76
 msgid "Action performed by LINK in confirmation email<br>(<i>only used in the confirmation email template</i>)"
 msgstr ""
 
@@ -193,87 +198,91 @@ msgstr ""
 msgid "Please confirm your request"
 msgstr ""
 
-#: src/admin.php:53
+#: src/admin.php:55
 msgid "Subscribe Mini Notification Override"
 msgstr ""
 
-#: src/admin.php:66
+#: src/admin.php:68
 msgid "Subscribe Mini Preview"
 msgstr ""
 
-#: src/admin.php:80
+#: src/admin.php:82
 msgid "Subscribe Mini Resend"
 msgstr ""
 
-#: src/admin.php:98
+#: src/admin.php:100
 msgid "Check here to disable sending of an email notification for this post/page"
 msgstr ""
 
-#: src/admin.php:110
+#: src/admin.php:112
 msgid "Send preview email of this post to currently logged in user:"
 msgstr ""
 
-#: src/admin.php:111
+#: src/admin.php:113
 msgid "Send Preview"
 msgstr ""
 
-#: src/admin.php:116
+#: src/admin.php:118
 msgid "Resend the notification email of this post to current subscribers:"
 msgstr ""
 
-#: src/admin.php:117
+#: src/admin.php:119
 msgid "Resend Notification"
 msgstr ""
 
-#: src/admin.php:177
+#: src/admin.php:182
 msgid "Number of subscribers per page: "
 msgstr ""
 
-#: src/admin.php:237
+#: src/admin.php:242
 msgid "Send Admins notifications for new: "
 msgstr ""
 
-#: src/admin.php:248
+#: src/admin.php:253
 msgid "Subscriptions"
 msgstr ""
 
-#: src/admin.php:252
+#: src/admin.php:257
 msgid "Unsubscriptions"
 msgstr ""
 
-#: src/admin.php:256
+#: src/admin.php:261
 msgid "Both"
 msgstr ""
 
-#: src/admin.php:260
+#: src/admin.php:265
 msgid "Neither"
 msgstr ""
 
-#: src/admin.php:267
+#: src/admin.php:272
+msgid "Set default sender address"
+msgstr ""
+
+#: src/admin.php:284
 msgid "Set default Subscribe Mini page as"
 msgstr ""
 
-#: src/admin.php:279
+#: src/admin.php:296
 msgid "Set imprint/dataprotection page as"
 msgstr ""
 
-#: src/admin.php:291
+#: src/admin.php:308
 msgid "Barred Domains"
 msgstr ""
 
-#: src/admin.php:300
+#: src/admin.php:317
 msgid "Enter domains to bar for public subscriptions, wildcards (*) and exceptions (!) are allowed"
 msgstr ""
 
-#: src/admin.php:301
+#: src/admin.php:318
 msgid "Use a new line for each entry and omit the \"@\" symbol, for example !email.com, hotmail.com, yahoo.*"
 msgstr ""
 
-#: src/admin.php:324
+#: src/admin.php:341
 msgid "Preview message(s) sent to logged in user"
 msgstr ""
 
-#: src/admin.php:411
+#: src/admin.php:456
 msgid "&mdash; select &mdash;"
 msgstr ""
 
@@ -282,10 +291,8 @@ msgstr ""
 msgid "Imprint / Dataprotection"
 msgstr ""
 
-#: src/core.php:250
-#: src/frontend.php:295
-#: src/widget.php:74
-msgid "Unsubscribe"
+#: src/core.php:263
+msgid "unsubscribe"
 msgstr ""
 
 #: src/frontend.php:26
@@ -326,6 +333,11 @@ msgstr ""
 
 #: src/frontend.php:114
 msgid "You have successfully unsubscribed!"
+msgstr ""
+
+#: src/frontend.php:295
+#: src/widget.php:74
+msgid "Unsubscribe"
 msgstr ""
 
 #: src/frontend.php:347
