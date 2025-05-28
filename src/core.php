@@ -145,7 +145,7 @@ abstract class Core
         }
 
         $site_url = get_site_url();
-        $html_excerpt = preg_replace_callback('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', function ($matches) use ($site_url) {
+        $html_excerpt = preg_replace_callback('/<img[^>]+src=[\'"]([^\'"]+)[\'"][^>]*>/i', function ($matches) use ($site_url) {
             if (!str_starts_with($matches[1], $site_url)) {
                 return '';
             }
